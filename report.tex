@@ -1,0 +1,123 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usepackage{graphicx}
+\usepackage[english,greek]{babel}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{float}
+
+\newcommand{\includeimage}[2]{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\linewidth]{#1}
+        \if\relax\detokenize{#2}\relax
+            % Do nothing if #2 is empty
+        \else
+            \caption{#2}
+        \fi
+    \end{figure}
+}
+
+\begin{document}
+\title{$Project$ ΗΥ-360}
+\author{Δρακάκης Ραφαήλ $csd5310$\\Άγγελος-Τίτος Δήμογλης $csd5078$\\Κωνσταντίνος Κουναλάκης $csd5058$}
+\date{}
+\maketitle
+\section*{1η φάση}
+Η πρώτη φάση αφορά την δημιουργία ενός πλήρους εννοιολογικού μοντέλου.
+\subsection*{$E-R$ Διάγραμμα}
+\includeimage{E-R.png}{Το ζητούμενο διάγραμμα}
+Στο διάγραμμα φαίνονται τα γνωρίσματα όλων των οντοτήτων και σχέσεων και τα πρωτεύοντα κλειδιά\\
+Σχετικά με τα γνωρίσματα και τις σχέσεις έχουμε:\\
+Μια σχέση $contains$ ανάμεσα στο $ticket$ και το $reservation$, και μια σχέση $Makes$ ανάμεσα στον $customer$ και το $reservation$.\\
+Οι περιορισμοί για τις πληθικότητες φαίνονται στο σχήμα
+\subsection*{Μετάφραση στο σχεσιακό μοντέλο}
+Παρακάτω φαίνονται οι πίνακες για το σχεσιακό μοντέλο\\
+% Table 1: Customer
+\noindent
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{$Customer$} \\
+\hline
+$cid$ & $mail$ & $credit\_info$ & $f\_name$ & $l\_name$ \\
+\hline
+& & & & \\
+\hline
+\end{tabular}
+
+\vspace{10pt}
+
+% Table 2: Event
+\noindent
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\multicolumn{6}{|c|}{$Event$} \\
+\hline
+$eid$ & $name$ & $type$ & $time$ & $date$ & $capacity$ \\
+\hline
+& & & & & \\
+\hline
+\end{tabular}
+
+\vspace{10pt}
+
+% Table 3: Ticket
+\noindent
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\multicolumn{5}{|c|}{$Ticket$} \\
+\hline
+$tid$ & $type$ & $price$ & $availability$ & $seat\_number$ \\
+\hline
+& & & & \\
+\hline
+\end{tabular}
+
+\vspace{10pt}
+
+% Table 4: Reservation
+\noindent
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\multicolumn{6}{|c|}{$Reservation$} \\
+\hline
+$rid$ & $eid$ & $cid$ & $date$ & $total\_price$ & $tickets\_number$ \\
+\hline
+& & & & & \\
+\hline
+\end{tabular}
+
+\vspace{10pt}
+
+% Relations
+
+% Relation: Contains (Event and Ticket)
+\noindent
+\begin{tabular}{|c|c|}
+\hline
+\multicolumn{2}{|c|}{$Contains$} \\
+\hline
+$eid$ & $tid$ \\
+\hline
+& \\
+\hline
+\end{tabular}
+
+\vspace{5pt}
+
+% Relation: Makes (Customer and Reservation)
+\noindent
+\begin{tabular}{|c|c|}
+\hline
+\multicolumn{2}{|c|}{$Makes$} \\
+\hline
+$cid$ & $rid$ \\
+\hline
+& \\
+\hline
+\end{tabular}
+
+
+\end{document}
