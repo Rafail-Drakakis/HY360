@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Events</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="form-container">
+        <h2>Search Events</h2>
+        <form action="#" method="GET" onsubmit="return false;">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date">
+            
+            <label for="event-type">Event Type:</label>
+            <select id="event-type" name="event-type">
+                <option value="concert">Concert</option>
+            </select>
+            
+            <label for="availability">Availability:</label>
+            <select id="availability" name="availability">
+                <option value="available">Available</option>
+                <option value="sold-out">Sold Out</option>
+            </select>
+            
+            <button type="submit">Search</button>
+        </form>
+    </div>
+</body>
+</html>
