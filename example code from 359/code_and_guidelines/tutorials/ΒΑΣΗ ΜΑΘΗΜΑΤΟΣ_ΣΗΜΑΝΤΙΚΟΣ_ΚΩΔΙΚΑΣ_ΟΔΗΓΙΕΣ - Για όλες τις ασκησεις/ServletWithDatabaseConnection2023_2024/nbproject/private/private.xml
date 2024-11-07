@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/nbproject/build-impl.xml</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/src/java/database/init/Resources.java</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/src/java/database/init/InitDatabase.java</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/web/META-INF/context.xml</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/web/index.html</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/src/java/servlets/InitDB.java</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/src/java/servlets/DeleteDB.java</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/web/js/ajax.js</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/src/conf/MANIFEST.MF</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/web/WEB-INF/web.xml</file>
+            <file>file:/C:/Users/mountant/Documents/ServletWithDatabaseConnection2023_2024/src/java/servlets/GetPetKeeper.java</file>
+        </group>
+    </open-files>
+</project-private>
