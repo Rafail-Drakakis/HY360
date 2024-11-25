@@ -133,7 +133,7 @@ $tid$ & $eid$ \\
 \hline
 \end{tabular}
 
-\subsection*{Εντολές της γλώσσας ορισμού δεδομένων για τις σχέσεις που προκύπτουν}
+\subsection*{Εντολές $SQL$ για τις σχέσεις που προκύπτουν}
 \selectlanguage{english}
 \begin{lstlisting}
 CREATE TABLE Customer (
@@ -209,4 +209,155 @@ CREATE TABLE Has (
 );
 \end{lstlisting}
 \selectlanguage{greek}
+\subsection*{Περιορισμοί Ακεραιότητας}
+Οι περιορισμοί ακεραιότητας για την βάση δεδομένων περιλαμβάνουν τα εξής:
+\begin{itemize}
+    \item Πρωτεύοντα Κλειδιά
+    \begin{itemize}
+        \item $Customer(cid)$
+        \item $Event(eid)$
+        \item $Ticket(tid)$
+        \item $Reservation(rid)$
+    \end{itemize}
+    \item Ξένα Κλειδιά
+    \begin{itemize}
+        \item Στον πίνακα $Reservation$, το πεδίο $eid$ αναφέρεται στον πίνακα $Event$.
+        \item Στον πίνακα $Reservation$, το πεδίο $cid$ αναφέρεται στον πίνακα $Customer$.
+        \item Στον πίνακα $Contains$, το πεδίο $tid$ αναφέρεται στον πίνακα $Ticket$.
+    \end{itemize}
+    \item Μοναδικότητα: Το πεδίο $mail$ στον πίνακα $Customer$ είναι μοναδικό για κάθε πελάτη.
+    \item Υποχρεωτικά Πεδία: Τα πεδία $cid$ στον πίνακα $Customer$, $eid$ στον πίνακα $Event$, και $tid$ στον πίνακα $Ticket$ δεν επιτρέπουν κενές τιμές.
+    \item Επιτρεπόμενες Τιμές: Οι τιμές του $price$ στον πίνακα $Ticket$ πρέπει να είναι θετικές.
+\end{itemize}
+
+\subsection*{Συναρτησιακές Εξαρτήσεις}
+Οι συναρτησιακές εξαρτήσεις μεταξύ των πεδίων των πινάκων είναι οι εξής:
+\begin{itemize}
+    \item $cid \rightarrow mail, credit\_info, f\_name, l\_name$ (από τον πίνακα $Customer$)
+    \item $eid \rightarrow name, type, time, date, capacity$ (από τον πίνακα $Event$)
+    \item $tid \rightarrow type, price, availability, seat\_number$ (από τον πίνακα $Ticket$)
+    \item $rid \rightarrow eid, cid, date, total\_price, tickets\_number$ (από τον πίνακα $Reservation$)
+    \item $eid, tid \rightarrow tickets\_number$ (από τη σχέση $Contains$)
+\end{itemize}
+
+\subsection*{Μετατροπή σε Τρίτη Κανονική Μορφή}
+
+\subsection*{Ερωτήματα $SQL$}
+Ακολουθούν παραδείγματα $SQL$ ερωτημάτων για την βάση δεδομένων:
+\begin{itemize}
+    \item \textbf{Ερώτημα για την εύρεση όλων των κρατήσεων ενός πελάτη:}
+    \selectlanguage{english}
+    \begin{lstlisting}
+    SELECT * FROM Reservation
+    WHERE cid = 164; 
+    \end{lstlisting}
+    	\selectlanguage{greek}
+    \item \textbf{Ερώτημα για την εύρεση όλων των διαθέσιμων εισιτηρίων για ένα γεγονός:}
+    \selectlanguage{english}
+    \begin{lstlisting}
+    SELECT * FROM Ticket
+    WHERE availability = TRUE AND eid = 163;
+    \end{lstlisting}
+	\selectlanguage{greek}
+    \item \textbf{Ερώτημα για την εύρεση του συνολικού κόστους μιας κράτησης:}
+    \selectlanguage{english}
+    \begin{lstlisting}
+    SELECT SUM(price) FROM Ticket
+    JOIN Reservation ON Ticket.eid = Reservation.eid
+    WHERE Reservation.rid = 924;
+    \end{lstlisting}
+    	\selectlanguage{greek}
+\end{itemize}
+
+\subsection*{Ψευδοκώδικας Διαδικασιών}
+Ακολουθεί ψευδοκώδικας για την διαδικασία δημιουργίας μιας νέας κράτησης:
+\selectlanguage{english}
+\begin{lstlisting}
+PROCEDURE ADD_CUSTOMER(email, credit_info, first_name, last_name):
+    IF email is not empty AND first_name is not empty 
+    		AND last_name is not empty:
+        INSERT INTO Customer (email, credit_info, first_name, last_name)
+        RETURN success
+    ELSE:
+        RETURN "Missing required fields"
+
+PROCEDURE CREATE_RESERVATION(customer_id, event_id, ticket_count, total_price):
+    IF ticket_count > 0 AND total_price > 0:
+        CHECK IF event_capacity(event_id) >= ticket_count:
+            INSERT INTO Reservation (customer_id, event_id, 
+            		ticket_count, total_price)
+            IF reservation is successful:
+                UPDATE ticket availability for the event
+                RETURN reservation ID
+            ELSE:
+                RETURN "Reservation failed"
+        ELSE:
+            RETURN "Not enough capacity"
+    ELSE:
+        RETURN "Invalid ticket count or price"
+
+PROCEDURE UPDATE_TICKET_AVAILABILITY(ticket_id, availability):
+    IF ticket_id exists AND availability is valid:
+        UPDATE Ticket 
+        SET availability = availability 
+        WHERE ticket_id = ticket_id
+        RETURN success
+    ELSE:
+        RETURN error "Invalid ticket ID or availability"
+
+PROCEDURE CHECK_EVENT_CAPACITY(event_id):
+    SELECT capacity 
+    FROM Event 
+    WHERE event_id = event_id
+    RETURN capacity
+    
+PROCEDURE ASSIGN_TICKET_TO_EVENT(ticket_id, event_id):
+    IF ticket_id exists AND event_id exists:
+        INSERT INTO Has (ticket_id, event_id)
+        RETURN success
+    ELSE:
+        RETURN "Invalid ticket or event"
+
+PROCEDURE CANCEL_RESERVATION(reservation_id):
+    IF reservation_id exists:
+        DELETE FROM Reservation 
+        WHERE reservation_id = reservation_id
+        UPDATE ticket availability
+        RETURN success
+    ELSE:
+        RETURN "Reservation not found"
+
+PROCEDURE UPDATE_EVENT(event_id, new_capacity):
+    IF event_id exists AND new_capacity > 0:
+        UPDATE Event 
+        SET capacity = new_capacity 
+        WHERE event_id = event_id
+        RETURN success
+    ELSE:
+        RETURN "Invalid event ID or capacity"
+        
+PROCEDURE GET_CUSTOMER_RESERVATIONS(customer_id):
+    SELECT * 
+    FROM Reservation 
+    WHERE customer_id = customer_id
+    RETURN reservation details
+
+PROCEDURE GET_EVENT_TICKETS(event_id):
+    SELECT * 
+    FROM Ticket 
+    WHERE event_id = event_id AND availability = TRUE
+    RETURN available tickets
+
+PROCEDURE GET_TOTAL_COST(reservation_id):
+    SELECT SUM(price) 
+    FROM Ticket 
+    JOIN Reservation 
+        ON Ticket.event_id = Reservation.event_id
+    WHERE Reservation.reservation_id = reservation_id
+    RETURN total cost
+
+\end{lstlisting}
+\selectlanguage{greek}
+\section*{2η φάση}
+
 \end{document}
