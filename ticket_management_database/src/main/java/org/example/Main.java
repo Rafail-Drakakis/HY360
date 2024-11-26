@@ -24,7 +24,8 @@ public class Main {
         } catch (SQLException e) {
             System.exit(1);
         }
-}
+    }
+
     private static void create_tables(Connection con) throws SQLException {
         Statement statement = con.createStatement();
 
@@ -105,7 +106,6 @@ public class Main {
                 " FOREIGN KEY (eid) REFERENCES Event(eid)" +
                 ")"
         );
-
 
     }
 }
