@@ -1,9 +1,29 @@
 \documentclass{article}
+\usepackage{fontspec}
+\usepackage{polyglossia, csquotes}
+\setdefaultlanguage{greek}
+\PolyglossiaSetup{greek}{indentfirst=false}
+\setotherlanguage{english}
+
+\setmainfont{Linux Libertine O}[
+	SmallCapsFeatures={Letters=SmallCaps},
+	SmallCapsFont={Linux Libertine O},
+	Ligatures=TeX,
+	Script={Greek}
+	]
+\setsansfont{Linux Libertine O}[
+	SmallCapsFont={Linux Libertine O},
+	Ligatures=TeX,
+	Numbers=OldStyle,
+	Script={Greek}
+	]
+
+\setmonofont{Linux Libertine Mono O}
+
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{trees}
 \usepackage{graphicx}
-\usepackage[english,greek]{babel}
 \usepackage{listings}
 \usepackage{array}
 \usepackage{float}
@@ -21,17 +41,17 @@
 }
 
 \begin{document}
-\title{$Project$ ΗΥ-360}
-\author{Δρακάκης Ραφαήλ $csd5310$\\Άγγελος-Τίτος Δήμογλης $csd5078$\\Κωνσταντίνος Κουναλάκης $csd5058$}
+\title{Project ΗΥ-360}
+\author{Δρακάκης Ραφαήλ csd5310\\Άγγελος-Τίτος Δήμογλης csd5078\\Κωνσταντίνος Κουναλάκης csd5058}
 \date{}
 \maketitle
 \section*{1η φάση}
 Η πρώτη φάση αφορά την δημιουργία ενός πλήρους εννοιολογικού μοντέλου.
-\subsection*{$E-R$ Διάγραμμα}
+\subsection*{E-R Διάγραμμα}
 \includeimage{E-R.png}{Το ζητούμενο διάγραμμα}
 Στο διάγραμμα φαίνονται τα γνωρίσματα όλων των οντοτήτων και σχέσεων και τα πρωτεύοντα κλειδιά\\
 Σχετικά με τα γνωρίσματα και τις σχέσεις έχουμε:\\
-Μια σχέση $contains$ ανάμεσα στο $ticket$ και το $reservation$, και μια σχέση $Makes$ ανάμεσα στον $customer$ και το $reservation$.\\
+Μια σχέση contains ανάμεσα στο ticket και το reservation, και μια σχέση Makes ανάμεσα στον customer και το reservation.\\
 Οι περιορισμοί για τις πληθικότητες φαίνονται στο σχήμα
 \subsection*{Μετάφραση στο σχεσιακό μοντέλο}
 Παρακάτω φαίνονται οι πίνακες για το σχεσιακό μοντέλο\\
@@ -39,9 +59,9 @@
 \noindent
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{5}{|c|}{$Customer$} \\
+\multicolumn{5}{|c|}{Customer} \\
 \hline
-$cid$ & $mail$ & $credit\_info$ & $f\_name$ & $l\_name$ \\
+cid & mail & credit\_info & f\_name & l\_name \\
 \hline
 & & & & \\
 \hline
@@ -53,9 +73,9 @@ $cid$ & $mail$ & $credit\_info$ & $f\_name$ & $l\_name$ \\
 \noindent
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
-\multicolumn{6}{|c|}{$Event$} \\
+\multicolumn{6}{|c|}{Event} \\
 \hline
-$eid$ & $name$ & $type$ & $time$ & $date$ & $capacity$ \\
+eid & name & type & time & date & capacity \\
 \hline
 & & & & & \\
 \hline
@@ -67,9 +87,9 @@ $eid$ & $name$ & $type$ & $time$ & $date$ & $capacity$ \\
 \noindent
 \begin{tabular}{|c|c|c|c|c|}
 \hline
-\multicolumn{5}{|c|}{$Ticket$} \\
+\multicolumn{5}{|c|}{Ticket} \\
 \hline
-$tid$ & $type$ & $price$ & $availability$ & $seat\_number$ \\
+tid & type & price & availability & seat\_number \\
 \hline
 & & & & \\
 \hline
@@ -81,9 +101,9 @@ $tid$ & $type$ & $price$ & $availability$ & $seat\_number$ \\
 \noindent
 \begin{tabular}{|c|c|c|c|c|c|}
 \hline
-\multicolumn{6}{|c|}{$Reservation$} \\
+\multicolumn{6}{|c|}{Reservation} \\
 \hline
-$rid$ & $eid$ & $cid$ & $date$ & $total\_price$ & $tickets\_number$ \\
+rid & eid & cid & date & total\_price & tickets\_number \\
 \hline
 & & & & & \\
 \hline
@@ -97,9 +117,9 @@ $rid$ & $eid$ & $cid$ & $date$ & $total\_price$ & $tickets\_number$ \\
 \noindent
 \begin{tabular}{|c|c|}
 \hline
-\multicolumn{2}{|c|}{$Contains$} \\
+\multicolumn{2}{|c|}{Contains} \\
 \hline
-$eid$ & $tid$ \\
+eid & tid \\
 \hline
 & \\
 \hline
@@ -111,9 +131,9 @@ $eid$ & $tid$ \\
 \noindent
 \begin{tabular}{|c|c|}
 \hline
-\multicolumn{2}{|c|}{$Makes$} \\
+\multicolumn{2}{|c|}{Makes} \\
 \hline
-$cid$ & $rid$ \\
+cid & rid \\
 \hline
 & \\
 \hline
@@ -125,15 +145,15 @@ $cid$ & $rid$ \\
 \noindent
 \begin{tabular}{|c|c|}
 \hline
-\multicolumn{2}{|c|}{$Has$} \\
+\multicolumn{2}{|c|}{Has} \\
 \hline
-$tid$ & $eid$ \\
+tid & eid \\
 \hline
 & \\
 \hline
 \end{tabular}
 
-\subsection*{Εντολές $SQL$ για τις σχέσεις που προκύπτουν}
+\subsection*{Εντολές SQL για τις σχέσεις που προκύπτουν}
 \selectlanguage{english}
 \begin{lstlisting}
 CREATE TABLE Customer (
@@ -214,97 +234,97 @@ CREATE TABLE Has (
 \begin{itemize}
     \item Πρωτεύοντα Κλειδιά
     \begin{itemize}
-        \item $Customer(cid)$
-        \item $Event(eid)$
-        \item $Ticket(tid)$
-        \item $Reservation(rid)$
+        \item Customer(cid)
+        \item Event(eid)
+        \item Ticket(tid)
+        \item Reservation(rid)
     \end{itemize}
     \item Ξένα Κλειδιά
     \begin{itemize}
-        \item Στον πίνακα $Reservation$, το πεδίο $eid$ αναφέρεται στον πίνακα $Event$.
-        \item Στον πίνακα $Reservation$, το πεδίο $cid$ αναφέρεται στον πίνακα $Customer$.
-        \item Στον πίνακα $Contains$, το πεδίο $tid$ αναφέρεται στον πίνακα $Ticket$.
+        \item Στον πίνακα Reservation, το πεδίο eid αναφέρεται στον πίνακα Event.
+        \item Στον πίνακα Reservation, το πεδίο cid αναφέρεται στον πίνακα Customer.
+        \item Στον πίνακα Contains, το πεδίο tid αναφέρεται στον πίνακα Ticket.
     \end{itemize}
-    \item Μοναδικότητα: Το πεδίο $mail$ στον πίνακα $Customer$ είναι μοναδικό για κάθε πελάτη.
-    \item Υποχρεωτικά Πεδία: Τα πεδία $cid$ στον πίνακα $Customer$, $eid$ στον πίνακα $Event$, και $tid$ στον πίνακα $Ticket$ δεν επιτρέπουν κενές τιμές.
-    \item Επιτρεπόμενες Τιμές: Οι τιμές του $price$ στον πίνακα $Ticket$ πρέπει να είναι θετικές.
+    \item Μοναδικότητα: Το πεδίο mail στον πίνακα Customer είναι μοναδικό για κάθε πελάτη.
+    \item Υποχρεωτικά Πεδία: Τα πεδία cid στον πίνακα Customer, eid στον πίνακα Event, και tid στον πίνακα Ticket δεν επιτρέπουν κενές τιμές.
+    \item Επιτρεπόμενες Τιμές: Οι τιμές του price στον πίνακα Ticket πρέπει να είναι θετικές.
 \end{itemize}
 
 \subsection*{Συναρτησιακές Εξαρτήσεις}
 Οι συναρτησιακές εξαρτήσεις μεταξύ των πεδίων των πινάκων είναι οι εξής:
 \begin{itemize}
-    \item $cid \rightarrow mail, credit\_info, f\_name, l\_name$ (από τον πίνακα $Customer$)
-    \item $eid \rightarrow name, type, time, date, capacity$ (από τον πίνακα $Event$)
-    \item $tid \rightarrow type, price, availability, seat\_number$ (από τον πίνακα $Ticket$)
-    \item $rid \rightarrow eid, cid, date, total\_price, tickets\_number$ (από τον πίνακα $Reservation$)
-    \item $eid, tid \rightarrow tickets\_number$ (από τη σχέση $Contains$)
+    \item cid \rightarrow mail, credit\_info, f\_name, l\_name (από τον πίνακα Customer)
+    \item eid \rightarrow name, type, time, date, capacity (από τον πίνακα Event)
+    \item tid \rightarrow type, price, availability, seat\_number (από τον πίνακα Ticket)
+    \item rid \rightarrow eid, cid, date, total\_price, tickets\_number (από τον πίνακα Reservation)
+    \item eid, tid \rightarrow tickets\_number (από τη σχέση Contains)
 \end{itemize}
 
 \subsection*{Μετατροπή σε Τρίτη Κανονική Μορφή}
-\subsubsection*{1. Πίνακας: Πελάτης $Customer$}
+\subsubsection*{1. Πίνακας: Πελάτης Customer}
 \begin{itemize}
-    \item Κύριο Κλειδί: $cid$
-    \item $1NF$: Όλες οι τιμές είναι ατομικές.
-    \item $2NF$: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί $cid$.
-    \item $3NF$: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
+    \item Κύριο Κλειδί: cid
+    \item 1NF: Όλες οι τιμές είναι ατομικές.
+    \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί cid.
+    \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας $Customer$ βρίσκεται σε $3NF$.
+\textbf{Συμπέρασμα:} Ο πίνακας Customer βρίσκεται σε 3NF.
 
-\subsubsection*{2. Πίνακας: Εκδήλωση $Event$}
+\subsubsection*{2. Πίνακας: Εκδήλωση Event}
 \begin{itemize}
-    \item Κύριο Κλειδί:} $eid$
-    \item $1NF$: Όλες οι τιμές είναι ατομικές.
-    \item $2NF$: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί $eid$.
-    \item $3NF$: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
+    \item Κύριο Κλειδί: eid
+    \item 1NF: Όλες οι τιμές είναι ατομικές.
+    \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί eid.
+    \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας $Event$ βρίσκεται σε $3NF$.
+\textbf{Συμπέρασμα:} Ο πίνακας Event βρίσκεται σε 3NF.
 
-\subsubsection*{3. Πίνακας: Εισιτήριο $Ticket$}
+\subsubsection*{3. Πίνακας: Εισιτήριο Ticket}
 \begin{itemize}
-    \item Κύριο Κλειδί: $tid$
-    \item $1NF$: Όλες οι τιμές είναι ατομικές.
-    \item $2NF$: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί $tid$).
-    \item $3NF$: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
+    \item Κύριο Κλειδί: tid
+    \item 1NF: Όλες οι τιμές είναι ατομικές.
+    \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί tid).
+    \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας $Ticket$ βρίσκεται σε $3NF$.
+\textbf{Συμπέρασμα:} Ο πίνακας Ticket βρίσκεται σε 3NF.
 
-\subsubsection*{4. Πίνακας: Κράτηση $Reservation$}
+\subsubsection*{4. Πίνακας: Κράτηση Reservation}
 \begin{itemize}
-    \item Κύριο Κλειδί: $rid$
-    \item $1NF$: Όλες οι τιμές είναι ατομικές.
-    \item $2NF$: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί $rid$.
-    \item $3NF$: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
+    \item Κύριο Κλειδί: rid
+    \item 1NF: Όλες οι τιμές είναι ατομικές.
+    \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί rid.
+    \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας $Reservation$ βρίσκεται σε $3NF$.
+\textbf{Συμπέρασμα:} Ο πίνακας Reservation βρίσκεται σε 3NF.
 
-\subsubsection*{5. Συσχέτιση: Περιέχει $Contains$}
+\subsubsection*{5. Συσχέτιση: Περιέχει Contains}
 \begin{itemize}
-    \item Κύριο Κλειδί: Σύνθετο κλειδί $eid$, $tid$)
-    \item $1NF$: Όλες οι τιμές είναι ατομικές.
-    \item $2NF$: Δεν υπάρχουν μερικές εξαρτήσεις.
-    \item $3NF$: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
+    \item Κύριο Κλειδί: Σύνθετο κλειδί eid, tid)
+    \item 1NF: Όλες οι τιμές είναι ατομικές.
+    \item 2NF: Δεν υπάρχουν μερικές εξαρτήσεις.
+    \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Η συσχέτιση $Contains$ βρίσκεται σε $3NF$.
+\textbf{Συμπέρασμα:} Η συσχέτιση Contains βρίσκεται σε 3NF.
 
-\subsubsection*{6. Συσχέτιση: Δημιουργεί $Makes$}
+\subsubsection*{6. Συσχέτιση: Δημιουργεί Makes}
 \begin{itemize}
-    \item \textbf{Κύριο Κλειδί:} Σύνθετο κλειδί $cid$, $rid$)
-    \item $1NF$: Όλες οι τιμές είναι ατομικές.
-    \item $2NF$: Δεν υπάρχουν μερικές εξαρτήσεις.
-    \item $3NF$: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
+    \item \textbf{Κύριο Κλειδί:} Σύνθετο κλειδί cid, rid)
+    \item 1NF: Όλες οι τιμές είναι ατομικές.
+    \item 2NF: Δεν υπάρχουν μερικές εξαρτήσεις.
+    \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Η συσχέτιση $Makes$ βρίσκεται σε $3NF$.
+\textbf{Συμπέρασμα:} Η συσχέτιση Makes βρίσκεται σε 3NF.
 
-\subsubsection*{7. Συσχέτιση: Έχει $Has$}
+\subsubsection*{7. Συσχέτιση: Έχει Has}
 \begin{itemize}
-    \item \textbf{Κύριο Κλειδί:} Σύνθετο κλειδί $tid$, $eid$)
-    \item $1NF$: Όλες οι τιμές είναι ατομικές.
-    \item $2NF$: Δεν υπάρχουν μερικές εξαρτήσεις.
-    \item $3NF$: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
+    \item \textbf{Κύριο Κλειδί:} Σύνθετο κλειδί tid, eid)
+    \item 1NF: Όλες οι τιμές είναι ατομικές.
+    \item 2NF: Δεν υπάρχουν μερικές εξαρτήσεις.
+    \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα: Η συσχέτιση $Has$ βρίσκεται σε $3NF$}
-\subsection*{Ερωτήματα $SQL$}
-Ακολουθούν παραδείγματα $SQL$ ερωτημάτων για την βάση δεδομένων:
+\textbf{Συμπέρασμα: Η συσχέτιση Has βρίσκεται σε 3NF}
+\subsection*{Ερωτήματα SQL}
+Ακολουθούν παραδείγματα SQL ερωτημάτων για την βάση δεδομένων:
 \begin{itemize}
     \item \textbf{Ερώτημα για την εύρεση όλων των κρατήσεων ενός πελάτη:}
     \selectlanguage{english}
