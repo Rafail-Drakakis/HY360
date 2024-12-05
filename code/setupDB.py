@@ -1,7 +1,7 @@
 import sqlite3
 
 # Create connection and cursor
-conn = sqlite3.connect('event_management.db')
+conn = sqlite3.connect('EventManagement.db')
 cursor = conn.cursor()
 
 # Create tables
