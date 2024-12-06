@@ -71,4 +71,3 @@ CREATE TABLE Makes (
 
 conn.commit()
 conn.close()
-

@@ -120,7 +120,7 @@
 \end{tikzpicture}
 Στο διάγραμμα φαίνονται τα γνωρίσματα όλων των οντοτήτων και σχέσεων και τα πρωτεύοντα κλειδιά\\
 Σχετικά με τα γνωρίσματα και τις σχέσεις έχουμε:\\
-Μια σχέση contains ανάμεσα στο ticket και το reservation, και μια σχέση Makes ανάμεσα στον customer και το reservation.\\
+Μια σχέση contains ανάμεσα στο ticket και το reservation, μια σχέση Makes ανάμεσα στον customer και το reservation.και μια σχέση Has ανάμεσα στο ticket και το Event.\\
 Οι περιορισμοί για τις πληθικότητες φαίνονται στο σχήμα
 \subsection*{Μετάφραση στο σχεσιακό μοντέλο}
 Παρακάτω φαίνονται οι πίνακες για το σχεσιακό μοντέλο\\
@@ -330,98 +330,91 @@ CREATE TABLE Has (
 \end{itemize}
 
 \subsection*{Μετατροπή σε Τρίτη Κανονική Μορφή}
-\subsubsection*{1. Πίνακας: Πελάτης Customer}
+\subsubsection*{1. Πίνακας Customer}
 \begin{itemize}
     \item Κύριο Κλειδί: cid
     \item 1NF: Όλες οι τιμές είναι ατομικές.
     \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί cid.
     \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας Customer βρίσκεται σε 3NF.
+Συμπέρασμα: Ο πίνακας Customer βρίσκεται σε 3NF.
 
-\subsubsection*{2. Πίνακας: Εκδήλωση Event}
+\subsubsection*{2. Πίνακας Event}
 \begin{itemize}
     \item Κύριο Κλειδί: eid
     \item 1NF: Όλες οι τιμές είναι ατομικές.
     \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί eid.
     \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας Event βρίσκεται σε 3NF.
+Συμπέρασμα: Ο πίνακας Event βρίσκεται σε 3NF.
 
-\subsubsection*{3. Πίνακας: Εισιτήριο Ticket}
+\subsubsection*{3. Πίνακας Ticket}
 \begin{itemize}
     \item Κύριο Κλειδί: tid
     \item 1NF: Όλες οι τιμές είναι ατομικές.
     \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί tid).
     \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας Ticket βρίσκεται σε 3NF.
+Συμπέρασμα: Ο πίνακας Ticket βρίσκεται σε 3NF.
 
-\subsubsection*{4. Πίνακας: Κράτηση Reservation}
+\subsubsection*{4. Πίνακας Reservation}
 \begin{itemize}
     \item Κύριο Κλειδί: rid
     \item 1NF: Όλες οι τιμές είναι ατομικές.
     \item 2NF: Όλα τα χαρακτηριστικά εξαρτώνται πλήρως από το κύριο κλειδί rid.
     \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Ο πίνακας Reservation βρίσκεται σε 3NF.
+Συμπέρασμα: Ο πίνακας Reservation βρίσκεται σε 3NF.
 
-\subsubsection*{5. Συσχέτιση: Περιέχει Contains}
+\subsubsection*{5. Σχέση Contains}
 \begin{itemize}
     \item Κύριο Κλειδί: Σύνθετο κλειδί eid, tid)
     \item 1NF: Όλες οι τιμές είναι ατομικές.
     \item 2NF: Δεν υπάρχουν μερικές εξαρτήσεις.
     \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Η συσχέτιση Contains βρίσκεται σε 3NF.
+Συμπέρασμα: Η συσχέτιση Contains βρίσκεται σε 3NF.
 
-\subsubsection*{6. Συσχέτιση: Δημιουργεί Makes}
+\subsubsection*{6. Σχέση Makes}
 \begin{itemize}
     \item \textbf{Κύριο Κλειδί:} Σύνθετο κλειδί cid, rid)
     \item 1NF: Όλες οι τιμές είναι ατομικές.
     \item 2NF: Δεν υπάρχουν μερικές εξαρτήσεις.
     \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα:} Η συσχέτιση Makes βρίσκεται σε 3NF.
+Συμπέρασμα: Η συσχέτιση Makes βρίσκεται σε 3NF.
 
-\subsubsection*{7. Συσχέτιση: Έχει Has}
+\subsubsection*{7. Σχέση Has}
 \begin{itemize}
     \item \textbf{Κύριο Κλειδί:} Σύνθετο κλειδί tid, eid)
     \item 1NF: Όλες οι τιμές είναι ατομικές.
     \item 2NF: Δεν υπάρχουν μερικές εξαρτήσεις.
     \item 3NF: Δεν υπάρχουν μεταβατικές εξαρτήσεις.
 \end{itemize}
-\textbf{Συμπέρασμα: Η συσχέτιση Has βρίσκεται σε 3NF}
+Συμπέρασμα: Η συσχέτιση Has βρίσκεται σε 3NF
 \subsection*{Ερωτήματα SQL}
 Ακολουθούν παραδείγματα SQL ερωτημάτων για την βάση δεδομένων:
 \begin{itemize}
-    \item \textbf{Ερώτημα για την εύρεση όλων των κρατήσεων ενός πελάτη:}
-    \selectlanguage{english}
+    \item Ερώτημα για την εύρεση όλων των κρατήσεων ενός πελάτη:
     \begin{lstlisting}
     SELECT * FROM Reservation
     WHERE cid = 164; 
     \end{lstlisting}
-    	\selectlanguage{greek}
-    \item \textbf{Ερώτημα για την εύρεση όλων των διαθέσιμων εισιτηρίων για ένα γεγονός:}
-    \selectlanguage{english}
+    \item Ερώτημα για την εύρεση όλων των διαθέσιμων εισιτηρίων για ένα γεγονός:
     \begin{lstlisting}
     SELECT * FROM Ticket
     WHERE availability = TRUE AND eid = 163;
     \end{lstlisting}
-	\selectlanguage{greek}
-    \item \textbf{Ερώτημα για την εύρεση του συνολικού κόστους μιας κράτησης:}
-    \selectlanguage{english}
+    \item Ερώτημα για την εύρεση του συνολικού κόστους μιας κράτησης:
     \begin{lstlisting}
     SELECT SUM(price) FROM Ticket
     JOIN Reservation ON Ticket.eid = Reservation.eid
     WHERE Reservation.rid = 924;
     \end{lstlisting}
-    	\selectlanguage{greek}
 \end{itemize}
 
 \subsection*{Ψευδοκώδικας Διαδικασιών}
 Ακολουθεί ψευδοκώδικας για την διαδικασία δημιουργίας μιας νέας κράτησης:
-\selectlanguage{english}
 \begin{lstlisting}
 PROCEDURE ADD_CUSTOMER(email, credit_info, first_name, last_name):
     IF email is not empty AND first_name is not empty 
@@ -507,7 +500,6 @@ PROCEDURE GET_TOTAL_COST(reservation_id):
     RETURN total cost
 
 \end{lstlisting}
-\selectlanguage{greek}
 \section*{2η φάση}
 \subsection*{Ενδεικτικά αποτελέσματα από την εκτέλεση των διαδικασιών}
 Οι σχετικές εικόνες θα εισαχθούν αργότερα
@@ -524,4 +516,10 @@ PROCEDURE GET_TOTAL_COST(reservation_id):
 	\item{Διαγραφή δεδομένων για πελάτες, εκδηλώσεις, εισητήρια, κρατήσεις}
 \end{itemize}
 \subsection*{Περιγραφή των περιορισμών της υλοποίησης}
+Δεδομένης της φύσης του project αλλά και της υλοποίησης, υπάρχουν οι εξής περιορισμοί:
+\begin{itemize}
+\item Τα δεδομένα έχουν προκαθορισμένα πεδία που ενδέχεται να μην καλύπτουν ειδικές περιπτώσεις (π.χ. πολλαπλά είδη πληρωμών, εκδηλώσεις πολλαπλών ημερών).
+\item Ελλιπής υποστήριξη πληρωμών: Η εφαρμογή διαχειρίζεται τη χρήση πιστωτικών καρτών, χωρίς να υπάρχουν μηχανισμοί ασφαλείας για τη διαχείριση ευαίσθητων δεδομένων.
+\item Δεν περιγράφεται πώς θα διασφαλιστεί η προστασία προσωπικών δεδομένων των πελατών (π.χ. για λόγους GDPR).
+\end{itemize}
 \end{document}
