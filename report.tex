@@ -23,22 +23,11 @@
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{trees}
+\usetikzlibrary{er,positioning,shapes.geometric}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{array}
 \usepackage{float}
-
-\newcommand{\includeimage}[2]{
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=\linewidth]{#1}
-        \if\relax\detokenize{#2}\relax
-            % Do nothing if #2 is empty
-        \else
-            \caption{#2}
-        \fi
-    \end{figure}
-}
 
 \begin{document}
 \title{Project ΗΥ-360}
@@ -48,7 +37,87 @@
 \section*{1η φάση}
 Η πρώτη φάση αφορά την δημιουργία ενός πλήρους εννοιολογικού μοντέλου.
 \subsection*{E-R Διάγραμμα}
-\includeimage{E-R.png}{Το ζητούμενο διάγραμμα}
+\begin{tikzpicture}[
+  scale=0.85, % Scale the entire diagram to fit within the page
+  transform shape, % Ensures proper scaling of all elements
+  entity/.style={draw, rectangle, rounded corners, minimum height=2em, minimum width=3em},
+  relationship/.style={draw, diamond, aspect=2, minimum height=1.5em, minimum width=2em},
+  attribute/.style={draw, ellipse, minimum height=2em, minimum width=2.5em},
+  line/.style={draw, -}
+]
+
+% Entities
+\node[entity] (Event) {Event};
+\node[entity, right=8cm of Event] (Ticket) {Ticket};
+\node[entity, below=4cm of Event] (Customer) {Customer};
+\node[entity, below=4cm of Ticket] (Reservation) {Reservation};
+
+% Attributes for Event
+\node[attribute, above left=1cm and 1cm of Event] (eid) {eid};
+\node[attribute, above=1cm of Event] (name) {name};
+\node[attribute, above right=1cm and 1cm of Event] (etype) {type};
+\node[attribute, below left=1cm and 1cm of Event] (time) {time};
+\node[attribute, below=1cm of Event] (date) {date};
+\node[attribute, below right=1cm and 1cm of Event] (capacity) {capacity};
+\draw[line] (eid) -- (Event) node[midway, above] {1,1};
+\draw[line] (name) -- (Event) node[midway, above, right=0.1] {1,1};
+\draw[line] (etype) -- (Event) node[midway, above, right=0.1] {1,1};
+\draw[line] (time) -- (Event) node[midway, above] {1,1};
+\draw[line] (date) -- (Event) node[midway, above, right=0.1] {1,1};
+\draw[line] (capacity) -- (Event) node[midway, above] {1,1};
+
+% Attributes for Ticket
+\node[attribute, above left=1cm and 1cm of Ticket] (tid) {tid};
+\node[attribute, above=1cm of Ticket] (type) {type};
+\node[attribute, above right=1cm and 1cm of Ticket] (price) {price};
+\node[attribute, below left=1cm and 1cm of Ticket] (availability) {availability};
+\node[attribute, below=1.3cm of Ticket] (seat_number) {seat\_number};
+\draw[line] (tid) -- (Ticket) node[midway, above] {1,1};
+\draw[line] (type) -- (Ticket) node[midway, above, right=0.1] {1,1};
+\draw[line] (price) -- (Ticket) node[midway, above, right=0.2] {1,1};
+\draw[line] (availability) -- (Ticket) node[midway, right] {1,1};
+\draw[line] (seat_number) -- (Ticket) node[midway, right] {1,1};
+
+% Attributes for Customer
+\node[attribute, above left=1cm and 1cm of Customer] (cid) {cid};
+\node[attribute, above=1cm of Customer] (mail) {mail};
+\node[attribute, above right=1cm and 1cm of Customer] (name) {name};
+\node[attribute, below left=1cm and 1cm of Customer] (f_name) {f\_name};
+\node[attribute, below right=1cm and 1cm of Customer] (l_name) {l\_name};
+\node[attribute, below=1cm of Customer] (credit_info) {credit\_info};
+\draw[line] (cid) -- (Customer) node[midway, right] {1,1};
+\draw[line] (mail) -- (Customer) node[midway, above, right=0.1] {1,1};
+\draw[line] (name) -- (Customer) node[midway, above] {1,1};
+\draw[line] (f_name) -- (Customer) node[midway, right] {1,1};
+\draw[line] (l_name) -- (Customer) node[midway, right] {1,1};
+\draw[line] (credit_info) -- (Customer) node[midway, right] {1,1};
+
+% Attributes for Reservation
+\node[attribute, above left=1cm and 1cm of Reservation] (r_date) {date};
+\node[attribute, above=1cm of Reservation] (r_cid) {cid};
+\node[attribute, above right=1cm and 3cm of Reservation] (r_eid) {eid};
+\node[attribute, below left=1cm and 1cm of Reservation] (total_price) {total\_price};
+\node[attribute, below right=1cm and 1cm of Reservation] (tickets_number) {tickets\_number};
+\draw[line] (r_date) -- (Reservation) node[midway, right] {1,1};
+\draw[line] (r_cid) -- (Reservation) node[midway, above, right=0.05] {1,1};
+\draw[line] (r_eid) -- (Reservation) node[midway, above, right=0.3] {1,1};
+\draw[line] (total_price) -- (Reservation) node[midway, right=0.2] {1,1};
+\draw[line] (tickets_number) -- (Reservation) node[midway, right] {1,1};
+
+% Relationships
+\node[relationship, above=3cm, left=2cm of Ticket] (Has) {Has};
+\draw[line] (Has) -- (Event) node[midway, above] {1,N};
+\draw[line] (Has) -- (Ticket) node[midway, above] {1,1};
+
+\node[relationship, above=1cm, left=2cm of Reservation] (Makes) {Makes};
+\draw[line] (Makes) -- (Customer) node[midway, above] {0,N};
+\draw[line] (Makes) -- (Reservation) node[midway, above] {1,1};
+
+\node[relationship, right=3cm of Ticket] (Contains) {Contains};
+\draw[line] (Contains) -- (Ticket) node[midway, above] {1,N};
+\draw[line] (Contains) -- (Reservation) node[midway, above=0.1] {1,N};
+
+\end{tikzpicture}
 Στο διάγραμμα φαίνονται τα γνωρίσματα όλων των οντοτήτων και σχέσεων και τα πρωτεύοντα κλειδιά\\
 Σχετικά με τα γνωρίσματα και τις σχέσεις έχουμε:\\
 Μια σχέση contains ανάμεσα στο ticket και το reservation, και μια σχέση Makes ανάμεσα στον customer και το reservation.\\
