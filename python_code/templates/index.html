@@ -1,21 +1,81 @@
-<!DOCTYPE hmtl>
-<html>
-
-  <head>
-    <title> Project hy360 </title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="styles.css">
-  </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>    
+<body>
+    <header>
+        <h1>Event Management System</h1>
+    </header>
+    <main>
+        <section id="operations">
+            <div class="operation">
+                <h2>Add New Customer</h2>
+                <form id="addCustomerForm">
+                    <input type="text" id="customerEmail" placeholder="Email" required>
+                    <input type="text" id="customerCredit" placeholder="Credit Info" required>
+                    <input type="text" id="customerFirstName" placeholder="First Name" required>
+                    <input type="text" id="customerLastName" placeholder="Last Name" required>
+                    <button type="submit">Add Customer</button>
+                </form>
+            </div>
 
-  <body>
+            <div class="operation">
+                <h2>Add New Event</h2>
+                <form id="addEventForm">
+                    <input type="text" id="eventName" placeholder="Event Name" required>
+                    <input type="text" id="eventType" placeholder="Type" required>
+                    <input type="time" id="eventTime" required>
+                    <input type="date" id="eventDate" required>
+                    <input type="number" id="eventCapacity" placeholder="Capacity" required>
+                    <button type="submit">Add Event</button>
+                </form>
+            </div>
 
-    <h1> Test </h1>
-    
-    <form action="" method= "POST">
-      
-    </form>
+            <div class="operation">
+                <h2>Search Available Seats</h2>
+                <form id="searchSeatsForm">
+                    <input type="number" id="eventId" placeholder="Event ID" required>
+                    <button type="submit">Search</button>
+                </form>
+                <div id="availableSeatsResult"></div>
+            </div>
 
+            <div class="operation">
+                <h2>Book Tickets</h2>
+                <form id="bookTicketsForm">
+                    <input type="number" id="bookEventId" placeholder="Event ID" required>
+                    <input type="number" id="customerId" placeholder="Customer ID" required>
+                    <input type="number" id="numTickets" placeholder="Number of Tickets" required>
+                    <button type="submit">Book Tickets</button>
+                </form>
+                <div id="bookingResult"></div>
+            </div>
 
-  </body>
+            <div class="operation">
+                <h2>Cancel Reservation</h2>
+                <form id="cancelReservationForm">
+                    <input type="number" id="reservationId" placeholder="Reservation ID" required>
+                    <button type="submit">Cancel Reservation</button>
+                </form>
+                <div id="cancelResult"></div>
+            </div>
 
+            <div class="operation">
+                <h2>View Event Statistics</h2>
+                <button id="viewTicketsLeft">See Tickets Left</button>
+                <button id="viewProfits">See Event Profits</button>
+                <button id="mostPopularEvent">Most Popular Event</button>
+                <button id="highestProfitEvent">Event with Highest Profit</button>
+                <div id="eventStatisticsResult"></div>
+            </div>
+        </section>
+    </main>
+    <script src="scripts.js"></script>
+</body>
 </html>
+
