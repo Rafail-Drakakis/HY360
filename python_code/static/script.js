@@ -15,6 +15,84 @@ function showMessage(message, type = "info") {
     }, 3000);
 }
 
+// Helper function to display the tables
+async function table_render(table_name) {
+
+    try {
+    const response = await fetch(`${API_URL}/` + table_name, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
+    
+    let jsonData = await response.json();
+    
+    // Get the container element where the table will be inserted
+    let container = document.getElementById(table_name + "_container");
+    
+    // Clear prvious render
+    while(container.firstChild){
+        container.removeChild(container.firstChild);
+    }
+    
+    // Append the table title to the container element
+    let head = document.createElement("h2");
+    head.textContent = table_name.charAt(0).toUpperCase() + table_name.slice(1) + " Table";
+    container.appendChild(head);    
+    
+    // Create the table element
+    let table = document.createElement("table");
+    
+    console.log("debug 0");
+    console.log(jsonData[0]);
+    // Get the keys (column names) of the first object in the JSON data
+    let cols = Object.keys(jsonData[0]);
+    
+    console.log("debug 1");
+    // Create the header element
+    let thead = document.createElement("thead");
+    let tr = document.createElement("tr");
+    
+    // Loop through the column names and create header cells
+    cols.forEach((item) => {
+    let th = document.createElement("th");
+    th.innerText = item; // Set the column name as the text of the header cell
+    tr.appendChild(th); // Append the header cell to the header row
+    });
+    thead.appendChild(tr); // Append the header row to the header
+    table.append(tr) // Append the header to the table
+    
+    console.log("debug 2");
+    // Loop through the JSON data and create table rows
+    jsonData.forEach((item) => {
+    let tr = document.createElement("tr");
+    
+    // Get the values of the current object in the JSON data
+    let vals = Object.values(item);
+    
+    console.log("debug 3");
+    // Loop through the values and create table cells
+    vals.forEach((elem) => {
+        let td = document.createElement("td");
+        td.innerText = elem; // Set the value as the text of the table cell
+        tr.appendChild(td); // Append the table cell to the table row
+    });
+    table.appendChild(tr); // Append the table row to the table
+    });
+    container.appendChild(table) // Append the table to the container element
+    
+    console.log("debug 4");
+    } 
+
+    catch (error) {
+        showMessage("Internal error rendering table");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
+    }
+
+}
+
+
 // Function to handle adding a new customer
 document.getElementById("addCustomerForm").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -34,11 +112,16 @@ document.getElementById("addCustomerForm").addEventListener("submit", async (e) 
         const result = await response.json();
         if (response.status === 201) {
             showMessage(result.message, "success");
+            table_render("customers");
+
         } else {
             showMessage(result.message, "error");
         }
     } catch (error) {
         showMessage("Error adding customer. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -62,11 +145,15 @@ document.getElementById("addEventForm").addEventListener("submit", async (e) => 
         const result = await response.json();
         if (response.status === 201) {
             showMessage(result.message, "success");
+            table_render("events");
         } else {
             showMessage(result.message, "error");
         }
     } catch (error) {
         showMessage("Error adding event. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -86,6 +173,9 @@ document.getElementById("searchSeatsForm").addEventListener("submit", async (e) 
         }
     } catch (error) {
         showMessage("Error fetching available seats. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -110,11 +200,16 @@ document.getElementById("bookTicketsForm").addEventListener("submit", async (e) 
         const result = await response.json();
         if (response.status === 201) {
             showMessage(result.message, "success");
+            table_render("tickets");
+            table_render("reservations");
         } else {
             showMessage(result.message, "error");
         }
     } catch (error) {
         showMessage("Error booking tickets. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -130,11 +225,16 @@ document.getElementById("cancelReservationForm").addEventListener("submit", asyn
         const result = await response.json();
         if (response.status === 200) {
             showMessage(result.message, "success");
+            table_render("tickets");
+            table_render("reservations");
         } else {
             showMessage(result.message, "error");
         }
     } catch (error) {
         showMessage("Error canceling reservation. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -154,6 +254,9 @@ document.getElementById("viewTicketsLeft").addEventListener("click", async () =>
         showMessage("Successfully retrieved tickets left for all events.", "success");
     } catch (error) {
         showMessage("Error fetching tickets left. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -173,6 +276,9 @@ document.getElementById("viewProfits").addEventListener("click", async () => {
         showMessage("Successfully retrieved profits for all events.", "success");
     } catch (error) {
         showMessage("Error fetching profits. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -188,6 +294,9 @@ document.getElementById("mostPopularEvent").addEventListener("click", async () =
         }
     } catch (error) {
         showMessage("Error fetching most popular event. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
 
@@ -209,5 +318,8 @@ document.getElementById("highestProfitEvent").addEventListener("click", async ()
         }
     } catch (error) {
         showMessage("Error fetching highest profit event. Try again.", "error");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
     }
 });
