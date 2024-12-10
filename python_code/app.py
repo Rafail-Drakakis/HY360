@@ -1,11 +1,25 @@
 from flask import Flask, request, jsonify, render_template
 import sqlite3
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
 
 def db_connection():
     conn = sqlite3.connect('EventManagement.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+'''
+============================================
+
+Functions to querry db
+Are called by js
+Js calls thme by routing 
+============================================
+
+'''
+
 
 @app.route('/')
 def home():
@@ -29,6 +43,7 @@ def manage_customers():
         """, (new_customer['mail'], new_customer['credit_info'], 
               new_customer['f_name'], new_customer['l_name']))
         conn.commit()
+        conn.close()
         return jsonify({'message': 'Customer added successfully!'}), 201
 
 @app.route('/events', methods=['GET', 'POST'])
@@ -50,6 +65,7 @@ def manage_events():
               new_event['time'], new_event['date'], 
               new_event['capacity']))
         conn.commit()
+        conn.close()
         return jsonify({'message': 'Event added successfully!'}), 201
 
 @app.route('/tickets', methods=['GET', 'POST'])
@@ -70,6 +86,7 @@ def manage_tickets():
         """, (new_ticket['type'], new_ticket['price'], 
               new_ticket['availability'], new_ticket['seat_number']))
         conn.commit()
+        conn.close()
         return jsonify({'message': 'Ticket added successfully!'}), 201
 
 @app.route('/reservations', methods=['GET', 'POST'])
@@ -91,6 +108,7 @@ def manage_reservations():
               new_reservation['date'], new_reservation['total_price'], 
               new_reservation['tickets_number']))
         conn.commit()
+        conn.close()
         return jsonify({'message': 'Reservation added successfully!'}), 201
 
 @app.route('/contains', methods=['POST'])
@@ -117,6 +135,7 @@ def manage_makes():
     VALUES (?, ?)
     """, (new_makes['cid'], new_makes['rid']))
     conn.commit()
+    conn.close()
     return jsonify({'message': 'Relation added successfully!'}), 201
 
 @app.route('/available_tickets/<int:eid>', methods=['GET'])
@@ -129,6 +148,7 @@ def get_available_tickets(eid):
     WHERE availability = 1 AND tid IN (SELECT tid FROM Contains WHERE eid = ?)
     """, (eid,))
     tickets = [dict(row) for row in cursor.fetchall()]
+    conn.close()
     return jsonify(tickets)
 
 @app.route('/customer_reservations/<int:cid>', methods=['GET'])
@@ -140,6 +160,7 @@ def get_customer_reservations(cid):
     SELECT * FROM Reservation WHERE cid = ?
     """, (cid,))
     reservations = [dict(row) for row in cursor.fetchall()]
+    conn.close()
     return jsonify(reservations)
 
 @app.route('/reservation_cost/<int:rid>', methods=['GET'])
@@ -155,6 +176,7 @@ def get_reservation_cost(rid):
     WHERE Reservation.rid = ?
     """, (rid,))
     cost = cursor.fetchone()
+    conn.close()
     return jsonify({'total_cost': cost['total_cost'] if cost else 0})
 
 @app.route('/customers/<int:cid>', methods=['DELETE'])
@@ -163,6 +185,7 @@ def delete_customer(cid):
     cursor = conn.cursor()
     cursor.execute("DELETE FROM Customer WHERE cid = ?", (cid,))
     conn.commit()
+    conn.close()
     return jsonify({'message': f'Customer with ID {cid} deleted successfully!'}), 200
 
 @app.route('/events/<int:eid>', methods=['DELETE'])
@@ -171,6 +194,7 @@ def delete_event(eid):
     cursor = conn.cursor()
     cursor.execute("DELETE FROM Event WHERE eid = ?", (eid,))
     conn.commit()
+    conn.close()
     return jsonify({'message': f'Event with ID {eid} deleted successfully!'}), 200
 
 @app.route('/tickets/<int:tid>', methods=['DELETE'])
@@ -179,6 +203,7 @@ def delete_ticket(tid):
     cursor = conn.cursor()
     cursor.execute("DELETE FROM Ticket WHERE tid = ?", (tid,))
     conn.commit()
+    conn.close()
     return jsonify({'message': f'Ticket with ID {tid} deleted successfully!'}), 200
 
 @app.route('/reservations/<int:rid>', methods=['DELETE'])
@@ -187,6 +212,7 @@ def delete_reservation(rid):
     cursor = conn.cursor()
     cursor.execute("DELETE FROM Reservation WHERE rid = ?", (rid,))
     conn.commit()
+    conn.close()
     return jsonify({'message': f'Reservation with ID {rid} deleted successfully!'}), 200
 
 @app.route('/available_seats/<int:eid>/<string:seat_type>', methods=['GET'])
@@ -198,6 +224,7 @@ def get_available_seats(eid, seat_type):
     WHERE availability = 1 AND type = ? AND tid IN (SELECT tid FROM Contains WHERE eid = ?)
     """, (seat_type, eid))
     tickets = [dict(row) for row in cursor.fetchall()]
+    conn.close()
     return jsonify(tickets)
 
 @app.route('/reserve_tickets', methods=['POST'])
@@ -219,6 +246,7 @@ def reserve_tickets():
         INSERT INTO Contains (eid, tid) VALUES (?, ?)
         """, (data['eid'], tid))
     conn.commit()
+    conn.close()
     return jsonify({'message': 'Reservation completed successfully!', 'reservation_id': rid}), 201
 
 @app.route('/cancel_reservation/<int:rid>', methods=['DELETE'])
@@ -238,6 +266,7 @@ def cancel_reservation(rid):
     cursor.execute("DELETE FROM Contains WHERE tid IN (SELECT tid FROM Ticket WHERE tid IN (SELECT tid FROM Contains WHERE eid IN (SELECT eid FROM Reservation WHERE rid = ?)))", (rid,))
     cursor.execute("DELETE FROM Reservation WHERE rid = ?", (rid,))
     conn.commit()
+    conn.close()
     return jsonify({'message': 'Reservation canceled successfully!'}), 200
 
 @app.route('/cancel_event/<int:eid>', methods=['DELETE'])
@@ -252,6 +281,7 @@ def cancel_event(eid):
         cancel_reservation(reservation['rid'])
     cursor.execute("DELETE FROM Event WHERE eid = ?", (eid,))
     conn.commit()
+    conn.close()
     return jsonify({'message': f'Event with ID {eid} canceled and all reservations refunded.'}), 200
 
 @app.route('/event_revenue/<int:eid>', methods=['GET'])
@@ -262,6 +292,7 @@ def event_revenue(eid):
     SELECT SUM(total_price) AS total_revenue FROM Reservation WHERE eid = ?
     """, (eid,))
     revenue = cursor.fetchone()
+    conn.close()
     return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
 
 @app.route('/most_popular_event', methods=['GET'])
@@ -277,6 +308,7 @@ def most_popular_event():
     LIMIT 1
     """)
     event = cursor.fetchone()
+    conn.close()
     return jsonify(event if event else {})
 
 @app.route('/highest_revenue_event', methods=['POST'])
@@ -294,6 +326,7 @@ def highest_revenue_event():
     LIMIT 1
     """, (data['start_date'], data['end_date']))
     event = cursor.fetchone()
+    conn.close()
     return jsonify(event if event else {})
 
 @app.route('/revenue_by_ticket_type', methods=['GET'])
@@ -307,7 +340,11 @@ def revenue_by_ticket_type():
     GROUP BY type
     """)
     revenue = cursor.fetchall()
+    conn.close()
     return jsonify(revenue)
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
