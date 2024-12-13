@@ -25,7 +25,7 @@ async function table_render(table_name) {
     });
     
     let jsonData = await response.json();
-    
+
     // Get the container element where the table will be inserted
     let container = document.getElementById(table_name + "_container");
     
@@ -42,12 +42,9 @@ async function table_render(table_name) {
     // Create the table element
     let table = document.createElement("table");
     
-    console.log("debug 0");
-    console.log(jsonData[0]);
     // Get the keys (column names) of the first object in the JSON data
     let cols = Object.keys(jsonData[0]);
     
-    console.log("debug 1");
     // Create the header element
     let thead = document.createElement("thead");
     let tr = document.createElement("tr");
@@ -61,7 +58,6 @@ async function table_render(table_name) {
     thead.appendChild(tr); // Append the header row to the header
     table.append(tr) // Append the header to the table
     
-    console.log("debug 2");
     // Loop through the JSON data and create table rows
     jsonData.forEach((item) => {
     let tr = document.createElement("tr");
@@ -69,7 +65,6 @@ async function table_render(table_name) {
     // Get the values of the current object in the JSON data
     let vals = Object.values(item);
     
-    console.log("debug 3");
     // Loop through the values and create table cells
     vals.forEach((elem) => {
         let td = document.createElement("td");
@@ -80,7 +75,6 @@ async function table_render(table_name) {
     });
     container.appendChild(table) // Append the table to the container element
     
-    console.log("debug 4");
     } 
 
     catch (error) {
@@ -91,6 +85,42 @@ async function table_render(table_name) {
     }
 
 }
+
+
+async function update_event_chooser(empty) {
+    
+    try {
+        const response = await fetch(`${API_URL}/eventnames`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    });
+     
+    let jsonData = await response.json();
+    
+    console.log(Object.keys(jsonData).length);
+    let container = document.getElementById("bookEventIdselect");
+    
+    while(container.firstChild){
+        container.removeChild(container.firstChild);
+    }
+    
+    for (let i = 0; i < Object.keys(jsonData).length; i++) {
+        var option = document.createElement("option");
+        option.value = jsonData[i].eid;
+        option.innerHTML = jsonData[i].name;
+        container.appendChild(option);    
+    }
+    }
+
+    catch (error) {
+        showMessage("error updating checkbox");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
+    }
+
+}
+
 
 // Helper function to populate tickets
 async function add_ticket(t_eid,t_type,t_price,t_availability,t_seat_number) {
@@ -125,22 +155,56 @@ async function add_ticket(t_eid,t_type,t_price,t_availability,t_seat_number) {
                 return;
             }
             else{
-                console.log("Error adding has, go NUCLEAR");
+                console.log("ERROR 1");
                 //TODO throw error?
             }
         }
         else{
-            console.log("Error adding ticket, go NUCLEAR");
+            console.log("ERROR 2");
         }
     } catch (error) {
-        console.log("Error adding ticket, go NUCLEAR", error.stack);
-        console.log("Error", error.name);
-        console.log("Error", error.message);
+        // console.log("ERROR 3", error.stack);
+        // console.log("Error", error.message);
         //TODO CLEAN ALL TICKETS, AND HAS TABLES WERE ENTREIS ARE relaetd to EID AND CANCEL EVENT
     }
 
 
 }
+
+document.getElementById("bookEventIdselect").addEventListener("change", async (e) => {
+    e.preventDefault();
+    console.log("hello")
+    try {
+        const response = await fetch(`${API_URL}/available_seats/` + getElementById("bookEventIdselect").value, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        });
+     
+        let jsonData = await response.json();
+        
+        console.log(Object.keys(jsonData).length);
+        let container = document.getElementById("tickets_select");
+        
+        while(container.firstChild){
+            container.removeChild(container.firstChild);
+        }
+        
+        for (let i = 0; i < Object.keys(jsonData).length; i++) {
+            var option = document.createElement("option");
+            option.value = jsonData[i].tid;
+            option.innerHTML = jsonData[i].type + " " + jsonData[i].seat_number + " " + jsonData[i].price + "(euro)";
+            container.appendChild(option);    
+        }
+    }
+
+    catch (error) {
+        showMessage("error updating checkbox");
+        console.log("Error", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
+    }
+
+});
 
 
 
@@ -236,6 +300,7 @@ document.getElementById("addEventForm").addEventListener("submit", async (e) => 
             showMessage(result.message, "success");
             table_render("events");
             table_render("tickets");
+            update_event_chooser("aaa");
         } else {
             showMessage(result.message, "error");
         }

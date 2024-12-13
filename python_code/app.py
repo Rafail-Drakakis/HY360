@@ -35,15 +35,19 @@ def manage_customers():
         return jsonify(customers)
 
     if request.method == 'POST':
-        new_customer = request.json
-        cursor.execute("""
-        INSERT INTO Customer (mail, credit_info, f_name, l_name)
-        VALUES (?, ?, ?, ?)
-        """, (new_customer['mail'], new_customer['credit_info'], 
-              new_customer['f_name'], new_customer['l_name']))
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Customer added successfully!'}), 201
+        try:
+            new_customer = request.json
+            cursor.execute("""
+            INSERT INTO Customer (mail, credit_info, f_name, l_name)
+            VALUES (?, ?, ?, ?)
+            """, (new_customer['mail'], new_customer['credit_info'], 
+                new_customer['f_name'], new_customer['l_name']))
+            conn.commit()
+            conn.close()
+            return jsonify({'message': 'Customer added successfully!'}), 201
+        except:
+            conn.close()
+            return jsonify({'message': 'Error, maybe email is not unique'}), 500
 
 @app.route('/events', methods=['GET', 'POST'])
 def manage_events():
@@ -57,16 +61,31 @@ def manage_events():
 
     if request.method == 'POST':
         new_event = request.json
-        cursor.execute("""
-        INSERT INTO Event (name, type, time, date, capacity)
-        VALUES (?, ?, ?, ?, ?)
-        """, (new_event['name'], new_event['type'], 
-              new_event['time'], new_event['date'], 
-              new_event['capacity']))
-        id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Event added successfully!','id': id}), 201
+        try:
+            cursor.execute("""
+            INSERT INTO Event (name, type, time, date, capacity)
+            VALUES (?, ?, ?, ?, ?)
+            """, (new_event['name'], new_event['type'], 
+                new_event['time'], new_event['date'], 
+                new_event['capacity']))
+            id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+            return jsonify({'message': 'Event added successfully!','id': id}), 201
+        except:
+            conn.close()
+            return jsonify({'message': 'Error'}), 500
+
+
+@app.route('/eventnames', methods=['GET'])
+def dropdown_events():
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT eid,name FROM Event")
+    events = [dict(row) for row in cursor.fetchall()]
+    return jsonify(events)
+
 
 @app.route('/tickets', methods=['GET', 'POST'])
 def manage_tickets():
@@ -79,16 +98,21 @@ def manage_tickets():
         return jsonify(tickets)
 
     if request.method == 'POST':
-        new_ticket = request.json
-        cursor.execute("""
-        INSERT INTO Ticket (type, price, availability, seat_number)
-        VALUES (?, ?, ?, ?)
-        """, (new_ticket['type'], new_ticket['price'], 
-              new_ticket['availability'], new_ticket['seat_number']))
-        id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Ticket added successfully!', 'tid':id}), 201
+        try:
+            new_ticket = request.json
+            cursor.execute("""
+            INSERT INTO Ticket (type, price, availability, seat_number)
+            VALUES (?, ?, ?, ?)
+            """, (new_ticket['type'], new_ticket['price'], 
+                new_ticket['availability'], new_ticket['seat_number']))
+            id = cursor.lastrowid
+            conn.commit()
+            conn.close()
+            return jsonify({'message': 'Ticket added successfully!', 'tid':id}), 201
+        except:
+            conn.close()
+            return jsonify({'message': 'Error'}), 500
+
 
 @app.route('/reservations', methods=['GET', 'POST'])
 def manage_reservations():
@@ -102,17 +126,22 @@ def manage_reservations():
 
     if request.method == 'POST':
         new_reservation = request.json
-        cursor.execute("""
-        INSERT INTO Reservation (eid, cid, date, total_price, tickets_number)
-        VALUES (?, ?, ?, ?, ?)
-        """, (new_reservation['eid'], new_reservation['cid'], 
-              new_reservation['date'], new_reservation['total_price'], 
-              new_reservation['tickets_number']))
-        row = cursor.fetchone()
-        (inserted_id, ) = row if row else None
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Reservation added successfully!'}), 201
+        try:
+            cursor.execute("""
+            INSERT INTO Reservation (eid, cid, date, total_price, tickets_number)
+            VALUES (?, ?, ?, ?, ?)
+            """, (new_reservation['eid'], new_reservation['cid'], 
+                    new_reservation['date'], new_reservation['total_price'], 
+                    new_reservation['tickets_number']))
+            row = cursor.fetchone()
+            (inserted_id, ) = row if row else None
+            conn.commit()
+            conn.close()
+            return jsonify({'message': 'Reservation added successfully!'}), 201
+        except:
+            conn.close()
+            return jsonify({'message': 'Error'}), 500
+
 
 @app.route('/contains', methods=['POST'])
 def manage_contains():
@@ -244,6 +273,20 @@ def get_available_seats(eid, seat_type):
     tickets = [dict(row) for row in cursor.fetchall()]
     conn.close()
     return jsonify(tickets)
+
+@app.route('/available_seats/<int:eid>', methods=['GET'])
+def get_available_seats_all(eid):
+    conn = db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    SELECT * FROM Ticket 
+    WHERE availability = 1 AND tid IN (SELECT tid FROM Contains WHERE eid = ?)
+    """, (seat_type, eid))
+    tickets = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return jsonify(tickets)
+
+
 
 @app.route('/reserve_tickets', methods=['POST'])
 def reserve_tickets():
