@@ -12,10 +12,9 @@ def db_connection():
 
 '''
 ============================================
-
-Functions to querry db
-Are called by js
-Js calls thme by routing 
+Functions to querry db,
+Are called by js,
+Js calls them by routing 
 ============================================
 
 '''
@@ -64,9 +63,10 @@ def manage_events():
         """, (new_event['name'], new_event['type'], 
               new_event['time'], new_event['date'], 
               new_event['capacity']))
+        id = cursor.lastrowid
         conn.commit()
         conn.close()
-        return jsonify({'message': 'Event added successfully!'}), 201
+        return jsonify({'message': 'Event added successfully!','id': id}), 201
 
 @app.route('/tickets', methods=['GET', 'POST'])
 def manage_tickets():
@@ -85,9 +85,10 @@ def manage_tickets():
         VALUES (?, ?, ?, ?)
         """, (new_ticket['type'], new_ticket['price'], 
               new_ticket['availability'], new_ticket['seat_number']))
+        id = cursor.lastrowid
         conn.commit()
         conn.close()
-        return jsonify({'message': 'Ticket added successfully!'}), 201
+        return jsonify({'message': 'Ticket added successfully!', 'tid':id}), 201
 
 @app.route('/reservations', methods=['GET', 'POST'])
 def manage_reservations():
@@ -107,6 +108,8 @@ def manage_reservations():
         """, (new_reservation['eid'], new_reservation['cid'], 
               new_reservation['date'], new_reservation['total_price'], 
               new_reservation['tickets_number']))
+        row = cursor.fetchone()
+        (inserted_id, ) = row if row else None
         conn.commit()
         conn.close()
         return jsonify({'message': 'Reservation added successfully!'}), 201
@@ -137,6 +140,21 @@ def manage_makes():
     conn.commit()
     conn.close()
     return jsonify({'message': 'Relation added successfully!'}), 201
+
+@app.route('/has', methods=['POST'])
+def manage_has():
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    new_has = request.json
+    cursor.execute("""
+    INSERT INTO Has (tid, eid)
+    VALUES (?, ?)
+    """, (new_has['tid'], new_has['eid']))
+    conn.commit()
+    conn.close()
+    return jsonify({'message': 'Relation added successfully!'}), 201
+
 
 @app.route('/available_tickets/<int:eid>', methods=['GET'])
 def get_available_tickets(eid):

@@ -92,6 +92,57 @@ async function table_render(table_name) {
 
 }
 
+// Helper function to populate tickets
+async function add_ticket(t_eid,t_type,t_price,t_availability,t_seat_number) {
+    const ticket = {
+        type: t_type,
+        price: t_price,
+        availability: t_availability,
+        seat_number:  t_seat_number   
+    };
+
+    try {
+        const response = await fetch(`${API_URL}/tickets`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(ticket)
+        });
+        const result = await response.json();
+        if (response.status === 201) {
+            
+            const has = {
+                tid: result.tid,
+                eid: t_eid,
+            };
+
+            const response = await fetch(`${API_URL}/has`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(has)
+            });
+            const result = await response.json();
+            if (response.status === 201) {
+                return;
+            }
+            else{
+                console.log("Error adding has, go NUCLEAR");
+                //TODO throw error?
+            }
+        }
+        else{
+            console.log("Error adding ticket, go NUCLEAR");
+        }
+    } catch (error) {
+        console.log("Error adding ticket, go NUCLEAR", error.stack);
+        console.log("Error", error.name);
+        console.log("Error", error.message);
+        //TODO CLEAN ALL TICKETS, AND HAS TABLES WERE ENTREIS ARE relaetd to EID AND CANCEL EVENT
+    }
+
+
+}
+
+
 
 // Function to handle adding a new customer
 document.getElementById("addCustomerForm").addEventListener("submit", async (e) => {
@@ -125,10 +176,13 @@ document.getElementById("addCustomerForm").addEventListener("submit", async (e) 
     }
 });
 
+
+
 // Function to handle adding a new event
 document.getElementById("addEventForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const event = {
+    
+    const event1 = {
         name: document.getElementById("eventName").value,
         type: document.getElementById("eventType").value,
         time: document.getElementById("eventTime").value,
@@ -136,16 +190,52 @@ document.getElementById("addEventForm").addEventListener("submit", async (e) => 
         capacity: document.getElementById("eventCapacity").value
     };
 
+    let capacity = document.getElementById("eventCapacity").value;
+
+    let vip_num = document.getElementById("VIP_Capacity").value;
+    let front_num = document.getElementById("FrontRow_Capacity").value;
+    let normal_num = document.getElementById("Normal_Capacity").value;
+    
+    let vip_price= document.getElementById("VIP_Price").value;
+    let front_price= document.getElementById("FrontRow_Price").value;
+    let normal_price = document.getElementById("Normal_Price").value;
+    
+    if(!isFinite(vip_num) || !isFinite(front_num) || !isFinite(normal_num)){
+        showMessage("Error: Number of seats given isn't integer!", "error");
+        return;
+    }
+
+    if ( (Number(vip_num) + Number(front_num) + Number(normal_num)) != Number(capacity)){
+        showMessage("Error: Number of seats don't add up to capacity!", "error");
+        return;
+    }
+
     try {
         const response = await fetch(`${API_URL}/events`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(event)
+            body: JSON.stringify(event1)
         });
         const result = await response.json();
+        
+        let event_id = result.id;
+        
         if (response.status === 201) {
+            //event added to db
+            for (let i = 0; i < Number(vip_num); i++) {
+                add_ticket(event_id,"VIP",vip_price,1,(i+1));
+            }
+            for (let i = 0; i < Number(front_num); i++) {
+                add_ticket(event_id,"FrontRow",front_price,1,(i+ 1 + Number(vip_num)));
+            }
+
+            for (let i = 0; i < Number(normal_num); i++) {
+                add_ticket(event_id,"Normal",normal_price,1,(i+ 1 + Number(vip_num) + Number(front_num)));
+            }
+
             showMessage(result.message, "success");
             table_render("events");
+            table_render("tickets");
         } else {
             showMessage(result.message, "error");
         }
@@ -199,6 +289,7 @@ document.getElementById("bookTicketsForm").addEventListener("submit", async (e) 
         });
         const result = await response.json();
         if (response.status === 201) {
+
             showMessage(result.message, "success");
             table_render("tickets");
             table_render("reservations");

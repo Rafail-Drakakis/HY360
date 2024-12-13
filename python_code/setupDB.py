@@ -69,5 +69,15 @@ CREATE TABLE Makes (
 );
 """)
 
+cursor.execute("""
+CREATE TABLE Has (
+    tid INTEGER,
+    eid INTEGER,
+    PRIMARY KEY (tid, eid),
+    FOREIGN KEY (tid) REFERENCES Ticket(tid),
+    FOREIGN KEY (eid) REFERENCES Event(eid)
+);
+""")
+
 conn.commit()
 conn.close()
