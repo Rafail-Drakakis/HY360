@@ -143,58 +143,75 @@ def manage_reservations():
             return jsonify({'message': 'Error'}), 500
 
 
-@app.route('/contains', methods=['POST'])
+@app.route('/contains', methods=['GET', 'POST'])
 def manage_contains():
     conn = db_connection()
     cursor = conn.cursor()
-    new_contains = request.json
-    try:
-        cursor.execute("""
-        INSERT INTO Contains (eid, tid)
-        VALUES (?, ?)
-        """, (new_contains['eid'], new_contains['tid']))
-        conn.commit()
-        return jsonify({'message': 'Relation added successfully!'}), 201
-    except:
-        conn.close()
-        return jsonify({'message': 'Error'}), 500
+    if request.method == 'GET':
+        cursor.execute("SELECT * FROM Contains")
+        res = [dict(row) for row in cursor.fetchall()]
+        return jsonify(res)
+
+    if request.method == 'POST':
+        new_contains = request.json
+        try:
+            cursor.execute("""
+            INSERT INTO Contains (eid, tid)
+            VALUES (?, ?)
+            """, (new_contains['eid'], new_contains['tid']))
+            conn.commit()
+            return jsonify({'message': 'Relation added successfully!'}), 201
+        except:
+            conn.close()
+            return jsonify({'message': 'Error'}), 500
 
 
-@app.route('/makes', methods=['POST'])
+@app.route('/makes', methods=['GET', 'POST'])
 def manage_makes():
     conn = db_connection()
     cursor = conn.cursor()
-    new_makes = request.json
-    try:
-        cursor.execute("""
-        INSERT INTO Makes (cid, rid)
-        VALUES (?, ?)
-        """, (new_makes['cid'], new_makes['rid']))
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Relation added successfully!'}), 201
-    except:
-        conn.close()
-        return jsonify({'message': 'Error'}), 500
+    if request.method == 'GET':
+            cursor.execute("SELECT * FROM Makes")
+            res= [dict(row) for row in cursor.fetchall()]
+            return jsonify(res)
+
+    if request.method == 'POST':
+        new_makes = request.json
+        try:
+            cursor.execute("""
+            INSERT INTO Makes (cid, rid)
+            VALUES (?, ?)
+            """, (new_makes['cid'], new_makes['rid']))
+            conn.commit()
+            conn.close()
+            return jsonify({'message': 'Relation added successfully!'}), 201
+        except:
+            conn.close()
+            return jsonify({'message': 'Error'}), 500
 
 
-@app.route('/has', methods=['POST'])
+@app.route('/has', methods=['GET', 'POST'])
 def manage_has():
     conn = db_connection()
     cursor = conn.cursor()
+    if request.method == 'GET':
+            cursor.execute("SELECT * FROM Has")
+            res= [dict(row) for row in cursor.fetchall()]
+            return jsonify(res)
 
-    new_has = request.json
-    try:
-        cursor.execute("""
-        INSERT INTO Has (tid, eid)
-        VALUES (?, ?)
-        """, (new_has['tid'], new_has['eid']))
-        conn.commit()
-        conn.close()
-        return jsonify({'message': 'Relation added successfully!'}), 201
-    except:
-        conn.close()
-        return jsonify({'message': 'Error'}), 500
+    if request.method == 'POST':
+        new_has = request.json
+        try:
+            cursor.execute("""
+            INSERT INTO Has (tid, eid)
+            VALUES (?, ?)
+            """, (new_has['tid'], new_has['eid']))
+            conn.commit()
+            conn.close()
+            return jsonify({'message': 'Relation added successfully!'}), 201
+        except:
+            conn.close()
+            return jsonify({'message': 'Error'}), 500
 
 
 
@@ -346,6 +363,7 @@ def get_price_of_ticket(eid, seat_type):
         LIMIT 1
         """, (seat_type, eid))
         price = cursor.fetchone()
+        print(price)
         conn.close()
         return jsonify( { "price": price if price else {}  }), 200
     except:
