@@ -110,7 +110,7 @@ async function add_ticket(
                 const result = await response.json();
                 if (response.status === 201) {
                     state = 1;
-                    tid = result.tid;
+                    tid1 = result.tid;
                 } else {
                     console.log("first post failed");
                     throw response.status;
@@ -140,7 +140,7 @@ async function add_ticket(
         }
     }
 }
-async function update_event_chooser(empty) {
+async function update_event_chooser(container_name) {
     while (true) {
         try {
             const response = await fetch(`${API_URL}/eventnames`, {
@@ -149,7 +149,7 @@ async function update_event_chooser(empty) {
             });
             let jsonData = await response.json();
             console.log(Object.keys(jsonData).length);
-            let container = document.getElementById("bookEventIdselect");
+            let container = document.getElementById(container_name);
             while (container.firstChild) {
                 container.removeChild(container.firstChild);
             }
@@ -189,6 +189,8 @@ async function update_tickets_chooser() {
             }
             vip_price = String(result.price) + "€";
             console.log("vip price was" + String(vip_price));
+            console.log("object was" + result);
+            console.log("first object was" + result[0]);
             response = await fetch(`${API_URL}/ticket_price/` + eid + "/" + "FrontRow", {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -383,7 +385,10 @@ document.getElementById("addEventForm").addEventListener(
                 }
                 showMessage(result.message, "success");
                 setTimeout(table_all(), 500);
-                update_event_chooser("aaa");
+                update_event_chooser("bookEventIdselect");
+                update_event_chooser("searchSeatsIdselect");
+                update_event_chooser("cancelEventIdselect");
+                // update_event_chooser("cancelEventIdselect");
             } else {
                 showMessage(result.message, "error");
             }

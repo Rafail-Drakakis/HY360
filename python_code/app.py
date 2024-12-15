@@ -358,14 +358,14 @@ def get_price_of_ticket(eid, seat_type):
     cursor = conn.cursor()
     try:
         cursor.execute("""
-        SELECT Ticket.price FROM Ticket 
-        WHERE type = ? AND tid IN (SELECT tid FROM Contains WHERE eid = ?)
+        SELECT price FROM Ticket 
+        WHERE type = ? AND tid IN (SELECT tid FROM Has WHERE eid = ?)
         LIMIT 1
         """, (seat_type, eid))
-        price = cursor.fetchone()
+        price = cursor.fetchone()[0]
         print(price)
         conn.close()
-        return jsonify( { "price": price if price else {}  }), 200
+        return jsonify( { "price": price }), 200
     except:
         conn.close()
         return jsonify({'message': 'Error'}), 500
