@@ -86,90 +86,128 @@ async function table_render(table_name) {
 
 }
 
-
-async function update_event_chooser(empty) {
-    
-    try {
-        const response = await fetch(`${API_URL}/eventnames`, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-    });
-     
-    let jsonData = await response.json();
-    
-    console.log(Object.keys(jsonData).length);
-    let container = document.getElementById("bookEventIdselect");
-    
-    while(container.firstChild){
-        container.removeChild(container.firstChild);
-    }
-    
-    for (let i = 0; i < Object.keys(jsonData).length; i++) {
-        var option = document.createElement("option");
-        option.value = jsonData[i].eid;
-        option.innerHTML = jsonData[i].name;
-        container.appendChild(option);    
-    }
-    }
-
-    catch (error) {
-        showMessage("error updating checkbox");
-        console.log("Error", error.stack);
-        console.log("Error", error.name);
-        console.log("Error", error.message);
-    }
-
-}
-
-
 // Helper function to populate tickets
 async function add_ticket(t_eid,t_type,t_price,t_availability,t_seat_number) {
-    const ticket = {
-        type: t_type,
-        price: t_price,
-        availability: t_availability,
-        seat_number:  t_seat_number   
-    };
-
-    try {
-        const response = await fetch(`${API_URL}/tickets`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(ticket)
-        });
-        const result = await response.json();
-        if (response.status === 201) {
+    var state = 0;
+    var tid1 = null;
+    while(true){
+        try {
             
-            const has = {
-                tid: result.tid,
-                eid: t_eid,
-            };
+            if(Number(state) == 0){
+                const ticket = {
+                    type: t_type,
+                    price: t_price,
+                    availability: t_availability,
+                    seat_number:  t_seat_number   
+                };
 
-            const response = await fetch(`${API_URL}/has`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(has)
-            });
-            const result = await response.json();
-            if (response.status === 201) {
-                return;
+                const response = await fetch(`${API_URL}/tickets`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(ticket)
+                });
+                const result = await response.json();
+                if (response.status === 201) {
+                    state = 1;
+                    tid = result.tid;
+                }
+                else{
+                    console.log("first post failed")
+                    throw response.status;
+                }
             }
-            else{
-                console.log("ERROR 1");
-                //TODO throw error?
+
+            if(Number(state) == 1){
+                const has = {
+                    tid: tid1,
+                    eid: t_eid,
+                };
+
+                const response = await fetch(`${API_URL}/has`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(has)
+                });
+                const result = await response.json();
+                if (response.status === 201) {
+                    return;
+                }
+                else{
+                    console.log("second post failed")
+                    throw response.status;
+                }
             }
+
+        } catch (error) {
+            console.log("ERROR 3", error.stack);
+            console.log("Error", error.message);
         }
-        else{
-            console.log("ERROR 2");
-        }
-    } catch (error) {
-        // console.log("ERROR 3", error.stack);
-        // console.log("Error", error.message);
-        //TODO CLEAN ALL TICKETS, AND HAS TABLES WERE ENTREIS ARE relaetd to EID AND CANCEL EVENT
     }
-
-
 }
+
+
+async function update_event_chooser(empty) {
+    while(true){
+        try {
+            const response = await fetch(`${API_URL}/eventnames`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+            });
+        
+            let jsonData = await response.json();
+            
+            console.log(Object.keys(jsonData).length);
+            let container = document.getElementById("bookEventIdselect");
+            
+            while(container.firstChild){
+                container.removeChild(container.firstChild);
+            }
+            
+            for (let i = 0; i < Object.keys(jsonData).length; i++) {
+                var option = document.createElement("option");
+                option.value = jsonData[i].eid;
+                option.innerHTML = jsonData[i].name;
+                container.appendChild(option);    
+            }
+            return;
+        }
+
+        catch (error) {
+            showMessage("error updating checkbox");
+            console.log("Error", error.stack);
+            console.log("Error", error.name);
+            console.log("Error", error.message);
+        }
+    }
+}
+
+async function update_tickets_chooser(empty) {
+        
+            
+        let container = document.getElementById("bookTicketsFormdiv");
+            
+            while(container.firstChild){
+                container.removeChild(container.firstChild);
+            }
+            var ticket_num = document.getElementById("numOfTickets").value;
+            for (let i = 0; i < ticket_num; i++) {
+                var option = document.createElement("");
+                option.value = jsonData[i].eid;
+                option.innerHTML = jsonData[i].name;
+                container.appendChild(option);    
+            }
+            return;
+        }
+
+        catch (error) {
+            showMessage("error updating checkbox");
+            console.log("Error", error.stack);
+            console.log("Error", error.name);
+            console.log("Error", error.message);
+        }
+}
+
+
 
 document.getElementById("bookEventIdselect").addEventListener("change", async (e) => {
     e.preventDefault();
@@ -299,7 +337,7 @@ document.getElementById("addEventForm").addEventListener("submit", async (e) => 
 
             showMessage(result.message, "success");
             table_render("events");
-            table_render("tickets");
+            setTimeout(table_render("tickets"),500);
             update_event_chooser("aaa");
         } else {
             showMessage(result.message, "error");
@@ -347,7 +385,7 @@ document.getElementById("bookTicketsForm").addEventListener("submit", async (e) 
     };
 
     try {
-        const response = await fetch(`${API_URL}/reserve_tickets`, {
+        const response = await fetch(`${API_URL}/reserve_tickets_temp`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(booking)
