@@ -335,6 +335,26 @@ def get_available_seats(eid, seat_type):
         return jsonify({'message': 'Error'}), 500
 
 
+@app.route('/ticket_price/<int:eid>/<string:seat_type>', methods=['GET'])
+def get_price_of_ticket(eid, seat_type):
+    conn = db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+        SELECT Ticket.price FROM Ticket 
+        WHERE type = ? AND tid IN (SELECT tid FROM Contains WHERE eid = ?)
+        LIMIT 1
+        """, (seat_type, eid))
+        price = cursor.fetchone()
+        conn.close()
+        return jsonify( { "price": price if price else {}  }), 200
+    except:
+        conn.close()
+        return jsonify({'message': 'Error'}), 500
+
+
+
+
 @app.route('/available_seats/<int:eid>', methods=['GET'])
 def get_available_seats_all(eid):
     conn = db_connection()

@@ -60,9 +60,8 @@
                         <option value="noEvent">No event</option>
                     </select>
                     <input type="text" id="customerId" placeholder="Customer email" required>
-                    <input type="text" id="numOfTickets" placeholder="Number of tickets" onchange="myFunction()" required>
-                    <div id=bookTicketsFormdiv>
-                    </div>
+                    <input type="text" id="numOfTickets" placeholder="Number of tickets" onchange="update_tickets_chooser()" required>
+                    <div id=bookTicketsFormdiv></div>
                     <button type="submit">Book Tickets</button>
                 </form>
                 <div id="bookingResult"></div>
