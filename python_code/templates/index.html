@@ -62,32 +62,72 @@
                 <div id="bookingResult"></div>
             </div>
 
-           
-            <div class="operation">
-                <h2>Cancel Reservation</h2>
-                <form id="cancelReservationForm">
-                    <input type="number" id="reservationId" placeholder="Reservation ID" required>
-                    <button type="submit">Cancel Reservation</button>
-                </form>
-                <div id="cancelResult"></div>
-            </div>
-
-            
+               
             <div class="operation">
                 <h2>Search Available Seats</h2>
                 <form id="searchSeatsForm">
-                    <input type="number" id="eventId" placeholder="Event ID" required>
+                    <select id="searchSeatsIdselect" name="seats_select" required>
+                        <option value="noEvent">No event</option>
+                    </select>
                     <button type="submit">Search</button>
+                </form>
+                <div id="availableSeatsResult"></div>
+            </div>
+            
+            <div class="operation">
+                <h2>Cancel Event</h2>
+                <form id="cancelEventForm">
+                    <select id="cancelEventIdselect" name="cancel_select" required>
+                        <option value="noEvent">No event</option>
+                    </select>
+                    <button type="submit">Cancel</button>
                 </form>
                 <div id="availableSeatsResult"></div>
             </div>
 
             <div class="operation">
+                <h2>Cancel Reservation(s)</h2>
+                <form id="cancelReservationForm">
+                    <input type="text" id="customerEmailCancel" placeholder=" Customer Email" required>
+                    <button type="submit">Cancel Reservation</button>
+                </form>
+                <div id="cancelResult"></div>
+            </div>
+
+
+            <div class="operation">
+                <h2>View profits</h2>
+                <form id="profitsForm">
+                    <select id="PES" name="profit_select" required>
+                        <option value="All">All events</option>
+                    </select>
+                    <select id="PTS" name="profit_type_select" required>
+                        <option value="All">All types</option>
+                        <option value="VIP">VIP only</option>
+                    </select>
+
+                    <button type="submit">View</button>
+                </form>
+                <div id="a"></div>
+            </div>
+
+            <div class="operation">
+                <h2>View Active Reservationsvations</h2>
+                <form id="cancelReservationForm">
+                    <label>Starting date</label><input type="date" id="eventDateS"  required>
+                    <label>Final date</label><input type="date" id="eventDateF" required>
+                    <button type="submit">Cancel Reservation</button>
+                </form>
+                <div id="cancelResult"></div>
+            </div>
+
+
+    
+            <div class="operation">
                 <h2>View Event Statistics</h2>
-                <button id="viewTicketsLeft">See Tickets Left</button>
-                <button id="viewProfits">See Event Profits</button>
                 <button id="mostPopularEvent">Most Popular Event</button>
                 <button id="highestProfitEvent">Event with Highest Profit</button>
+                <button id="refresh_render">Refresh Database</button>
                 <div id="eventStatisticsResult"></div>
             </div>
 

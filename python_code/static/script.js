@@ -19,7 +19,10 @@ async function table_render(table_name) {
             headers: { "Content-Type": "application/json" },
         });
         let jsonData = await response.json();
-
+        
+        if(!Object.keys(jsonData).length){
+            return;
+        }
         // Get the container element where the table will be inserted
         let container = document.getElementById(table_name + "_container");
         // Clear prvious render
@@ -62,12 +65,24 @@ async function table_render(table_name) {
         });
         container.appendChild(table); // Append the table to the container element
     } catch (error) {
-        showMessage("Internal error rendering table");
+        showMessage("Internal error rendering " + table_name + " table");
         console.log("Error", error.stack);
         console.log("Error", error.name);
         console.log("Error", error.message);
     }
 }
+
+function table_all() {
+    
+    table_render("customers");
+    table_render("events");
+    table_render("tickets");
+    table_render("reservations");
+    table_render("contains");
+    table_render("has");
+    table_render("makes");
+}
+
 // Helper function to populate tickets
 async function add_ticket(
     t_eid,
@@ -173,7 +188,7 @@ async function update_tickets_chooser() {
                 throw response.status;
             }
             vip_price = String(result.price) + "€";
-            console.log("vip price was" + String(vip_price[0]));
+            console.log("vip price was" + String(vip_price));
             response = await fetch(`${API_URL}/ticket_price/` + eid + "/" + "FrontRow", {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -288,7 +303,7 @@ document.getElementById("addCustomerForm").addEventListener(
             const result = await response.json();
             if (response.status === 201) {
                 showMessage(result.message, "success");
-                table_render("customers");
+                setTimeout(table_all(), 500);
             } else {
                 showMessage(result.message, "error");
             }
@@ -367,8 +382,7 @@ document.getElementById("addEventForm").addEventListener(
                     );
                 }
                 showMessage(result.message, "success");
-                table_render("events");
-                setTimeout(table_render("tickets"), 500);
+                setTimeout(table_all(), 500);
                 update_event_chooser("aaa");
             } else {
                 showMessage(result.message, "error");
@@ -434,8 +448,7 @@ document.getElementById("bookTicketsForm").addEventListener(
             const result = await response.json();
             if (response.status === 201) {
                 showMessage(result.message, "success");
-                table_render("tickets");
-                table_render("reservations");
+                setTimeout(table_all(), 500);
             } else {
                 showMessage(result.message, "error");
             }
@@ -463,8 +476,7 @@ document.getElementById("cancelReservationForm").addEventListener(
             const result = await response.json();
             if (response.status === 200) {
                 showMessage(result.message, "success");
-                table_render("tickets");
-                table_render("reservations");
+                setTimeout(table_all(), 500);
             } else {
                 showMessage(result.message, "error");
             }
@@ -477,40 +489,14 @@ document.getElementById("cancelReservationForm").addEventListener(
     },
 );
 // Function to view tickets left for all events
-document.getElementById("viewTicketsLeft").addEventListener(
+document.getElementById("refresh_render").addEventListener(
     "click",
-    async () => {
-        try {
-            const response = await fetch(`${API_URL}/events`);
-            const events = await response.json();
-            const ticketsLeft = await Promise.all(
-                events.map(async (event) => {
-                    const ticketResponse = await fetch(
-                        `${API_URL}/available_tickets/${event.eid}`,
-                    );
-                    const tickets = await ticketResponse.json();
-                    return {
-                        eventName: event.name,
-                        ticketsLeft: tickets.length,
-                    };
-                }),
-            );
-            document.getElementById("eventStatisticsResult").innerText = JSON
-                .stringify(ticketsLeft, null, 2);
-            showMessage(
-                "Successfully retrieved tickets left for all events.",
-                "success",
-            );
-        } catch (error) {
-            showMessage("Error fetching tickets left. Try again.", "error");
-            console.log("Error", error.stack);
-            console.log("Error", error.name);
-            console.log("Error", error.message);
-        }
+    () => {
+        table_all();
     },
 );
 // Function to view event profits
-document.getElementById("viewProfits").addEventListener("click", async () => {
+document.getElementById("profitsForm").addEventListener("sumbit", async () => {
     try {
         const response = await fetch(`${API_URL}/events`);
         const events = await response.json();
