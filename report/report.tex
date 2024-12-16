@@ -1,5 +1,6 @@
-\documentclass{article}
+\documentclass[a4paper, 11pt]{article}
 \usepackage{fontspec}
+\usepackage{minted}
 \usepackage{polyglossia, csquotes}
 \setdefaultlanguage{greek}
 \PolyglossiaSetup{greek}{indentfirst=false}
@@ -19,6 +20,18 @@
 	]
 
 \setmonofont{Linux Libertine Mono O}
+
+\newcommand{\includeimage}[2]{
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=\linewidth]{#1}
+        \if\relax\detokenize{#2}\relax
+            % Do nothing if #2 is empty
+        \else
+            \caption{#2}
+        \fi
+    \end{figure}
+}
 
 \usepackage{amsmath}
 \usepackage{tikz}
@@ -224,7 +237,7 @@ tid & eid \\
 
 \subsection*{Εντολές SQL για τις σχέσεις που προκύπτουν}
 \selectlanguage{english}
-\begin{lstlisting}
+\begin{minted}{sql}
 CREATE TABLE Customer (
     cid INT PRIMARY KEY,
     mail VARCHAR(255) NOT NULL,
@@ -232,9 +245,9 @@ CREATE TABLE Customer (
     f_name VARCHAR(100),
     l_name VARCHAR(100)
 );
-\end{lstlisting}
+\end{minted}
 
-\begin{lstlisting}
+\begin{minted}{sql}
 CREATE TABLE Event (
     eid INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -243,9 +256,9 @@ CREATE TABLE Event (
     date DATE,
     capacity INT
 );
-\end{lstlisting}
+\end{minted}
 
-\begin{lstlisting}
+\begin{minted}{sql}
 CREATE TABLE Ticket (
     tid INT PRIMARY KEY,
     type VARCHAR(100),
@@ -253,9 +266,9 @@ CREATE TABLE Ticket (
     availability BOOLEAN DEFAULT TRUE,
     seat_number INT
 );
-\end{lstlisting}
+\end{minted}
 
-\begin{lstlisting}
+\begin{minted}{sql}
 CREATE TABLE Reservation (
     rid INT PRIMARY KEY,
     eid INT,
@@ -266,9 +279,9 @@ CREATE TABLE Reservation (
     FOREIGN KEY (eid) REFERENCES Event(eid),
     FOREIGN KEY (cid) REFERENCES Customer(cid)
 );
-\end{lstlisting}
+\end{minted}
 
-\begin{lstlisting}
+\begin{minted}{sql}
 CREATE TABLE Contains (
     eid INT,
     tid INT,
@@ -276,9 +289,9 @@ CREATE TABLE Contains (
     FOREIGN KEY (eid) REFERENCES Event(eid),
     FOREIGN KEY (tid) REFERENCES Ticket(tid)
 );
-\end{lstlisting}
+\end{minted}
 
-\begin{lstlisting}
+\begin{minted}{sql}
 CREATE TABLE Makes (
     cid INT,
     rid INT,
@@ -286,9 +299,9 @@ CREATE TABLE Makes (
     FOREIGN KEY (cid) REFERENCES Customer(cid),
     FOREIGN KEY (rid) REFERENCES Reservation(rid)
 );
-\end{lstlisting}
+\end{minted}
 
-\begin{lstlisting}
+\begin{minted}{sql}
 CREATE TABLE Has (
     tid INT,
     eid INT,
@@ -296,7 +309,7 @@ CREATE TABLE Has (
     FOREIGN KEY (tid) REFERENCES Ticket(tid),
     FOREIGN KEY (eid) REFERENCES Event(eid)
 );
-\end{lstlisting}
+\end{minted}
 \selectlanguage{greek}
 \subsection*{Περιορισμοί Ακεραιότητας}
 Οι περιορισμοί ακεραιότητας για την βάση δεδομένων περιλαμβάνουν τα εξής:
@@ -396,35 +409,37 @@ CREATE TABLE Has (
 Ακολουθούν παραδείγματα SQL ερωτημάτων για την βάση δεδομένων:
 \begin{itemize}
     \item Ερώτημα για την εύρεση όλων των κρατήσεων ενός πελάτη:
-    \begin{lstlisting}
+    \begin{minted}{sql}
     SELECT * FROM Reservation
     WHERE cid = 164; 
-    \end{lstlisting}
+    \end{minted}
     \item Ερώτημα για την εύρεση όλων των διαθέσιμων εισιτηρίων για ένα γεγονός:
-    \begin{lstlisting}
+    \begin{minted}{sql}
     SELECT * FROM Ticket
     WHERE availability = TRUE AND eid = 163;
-    \end{lstlisting}
+    \end{minted}
     \item Ερώτημα για την εύρεση του συνολικού κόστους μιας κράτησης:
-    \begin{lstlisting}
+    \begin{minted}{sql}
     SELECT SUM(price) FROM Ticket
     JOIN Reservation ON Ticket.eid = Reservation.eid
     WHERE Reservation.rid = 924;
-    \end{lstlisting}
+    \end{minted}
 \end{itemize}
 
 \subsection*{Ψευδοκώδικας Διαδικασιών}
-Ακολουθεί ψευδοκώδικας για την διαδικασία δημιουργίας μιας νέας κράτησης:
-\begin{lstlisting}
+\begin{minted}{sql}
 PROCEDURE ADD_CUSTOMER(email, credit_info, first_name, last_name):
     IF email is not empty AND first_name is not empty 
     		AND last_name is not empty:
-        INSERT INTO Customer (email, credit_info, first_name, last_name)
+        INSERT INTO Customer (email, credit_info, 
+        first_name, last_name)
         RETURN success
     ELSE:
         RETURN "Missing required fields"
-
-PROCEDURE CREATE_RESERVATION(customer_id, event_id, ticket_count, total_price):
+\end{minted}
+\begin{minted}{sql}
+PROCEDURE CREATE_RESERVATION(customer_id, event_id,
+ ticket_count, total_price):
     IF ticket_count > 0 AND total_price > 0:
         CHECK IF event_capacity(event_id) >= ticket_count:
             INSERT INTO Reservation (customer_id, event_id, 
@@ -438,7 +453,8 @@ PROCEDURE CREATE_RESERVATION(customer_id, event_id, ticket_count, total_price):
             RETURN "Not enough capacity"
     ELSE:
         RETURN "Invalid ticket count or price"
-
+\end{minted}
+\begin{minted}{sql}
 PROCEDURE UPDATE_TICKET_AVAILABILITY(ticket_id, availability):
     IF ticket_id exists AND availability is valid:
         UPDATE Ticket 
@@ -447,20 +463,23 @@ PROCEDURE UPDATE_TICKET_AVAILABILITY(ticket_id, availability):
         RETURN success
     ELSE:
         RETURN error "Invalid ticket ID or availability"
-
+\end{minted}
+\begin{minted}{sql}
 PROCEDURE CHECK_EVENT_CAPACITY(event_id):
     SELECT capacity 
     FROM Event 
     WHERE event_id = event_id
     RETURN capacity
-    
+\end{minted} 
+\begin{minted}{sql}
 PROCEDURE ASSIGN_TICKET_TO_EVENT(ticket_id, event_id):
     IF ticket_id exists AND event_id exists:
         INSERT INTO Has (ticket_id, event_id)
         RETURN success
     ELSE:
         RETURN "Invalid ticket or event"
-
+\end{minted}
+\begin{minted}{sql}
 PROCEDURE CANCEL_RESERVATION(reservation_id):
     IF reservation_id exists:
         DELETE FROM Reservation 
@@ -469,7 +488,8 @@ PROCEDURE CANCEL_RESERVATION(reservation_id):
         RETURN success
     ELSE:
         RETURN "Reservation not found"
-
+\end{minted}
+\begin{minted}{sql}
 PROCEDURE UPDATE_EVENT(event_id, new_capacity):
     IF event_id exists AND new_capacity > 0:
         UPDATE Event 
@@ -478,19 +498,22 @@ PROCEDURE UPDATE_EVENT(event_id, new_capacity):
         RETURN success
     ELSE:
         RETURN "Invalid event ID or capacity"
-        
+\end{minted}      
+\begin{minted}{sql}
 PROCEDURE GET_CUSTOMER_RESERVATIONS(customer_id):
     SELECT * 
     FROM Reservation 
     WHERE customer_id = customer_id
     RETURN reservation details
-
+\end{minted}  
+\begin{minted}{sql}
 PROCEDURE GET_EVENT_TICKETS(event_id):
     SELECT * 
     FROM Ticket 
     WHERE event_id = event_id AND availability = TRUE
     RETURN available tickets
-
+\end{minted} 
+\begin{minted}{sql}
 PROCEDURE GET_TOTAL_COST(reservation_id):
     SELECT SUM(price) 
     FROM Ticket 
@@ -498,22 +521,97 @@ PROCEDURE GET_TOTAL_COST(reservation_id):
         ON Ticket.event_id = Reservation.event_id
     WHERE Reservation.reservation_id = reservation_id
     RETURN total cost
-
-\end{lstlisting}
+\end{minted}
 \section*{2η φάση}
 \subsection*{Ενδεικτικά αποτελέσματα από την εκτέλεση των διαδικασιών}
-Οι σχετικές εικόνες θα εισαχθούν αργότερα
-\subsection*{Εγχειρίδιο χρήσης της εφαρμογης}
-Για να χρησιμοποιηθεί η εφαρμογή πρέπει να γίνουν τα ακόλουθα:\\
-Αρχικά, εάν θέλουμε μια καθαρή βάση, θα πρέπει να διαγράψουμε το αρχείο eventManagement.db το οποίο περιέχει τις προηγούμενες εγγραφές που έγιναν στην βάση. Έπειτα, τρέχουμε python setupDB.py ώστε να δημιουργήσουμε μια νέα βάση. Στην συνέχεια, στην διεύθυνση http://127.0.0.1:5000/, θα δούμε το διαχειριστικό περιβάλλον της εφαρμογής μας. Μπορούμε να εκτελέσουμε λειτουργίες όπως:\\
+\includeimage{images/add_customer_try.png}{}
+\includeimage{images/add_customer_res.png}{}
+\includeimage{images/add_event_try.png}{}
+\includeimage{images/add_event_res.png}{}
+\includeimage{images/book_tickets_try.png}{}
+\includeimage{images/book_tickets_res.png}{}
+\includeimage{images/search_available_seats.png}{}
+\includeimage{images/view_profits.png}{}
+\includeimage{images/active_reservations.png}{}
+\includeimage{images/most_popular_event.png}{}
+\includeimage{images/event_highest_profit.png}{}
+\subsection*{Εγχειρίδιο χρήσης της εφαρμογής}
+Για να χρησιμοποιηθεί η εφαρμογή πρέπει να γίνουν τα ακόλουθα:
 \begin{itemize}
-	\item{Εγγραφή νέου πελάτη}
-	\item{Δημιουργία νέας εκδήλωσης}
-	\item{Εμφάνιση δεδομένων για πελάτες, εκδηλώσεις, εισητήρια, κρατήσεις}
-	\item{Εμφάνιση αριθμού διαθέσιμων εισητηρίων}
-	\item{Εμφάνιση αριθμού κρατήσεων που έχουν γίνει}
-	\item{Εμφάνιση συνολικού κέρδους}
-	\item{Διαγραφή δεδομένων για πελάτες, εκδηλώσεις, εισητήρια, κρατήσεις}
+	\item Αρχικά, εάν θέλουμε μια καθαρή βάση, θα πρέπει να διαγράψουμε το αρχείο \texttt{eventManagement.db} το οποίο περιέχει τις προηγούμενες εγγραφές που έγιναν στην βάση.
+	\item Τρέχουμε \texttt{python setupDB.py} ώστε να δημιουργήσουμε μια νέα βάση.
+	\item Εκτελούμε \texttt{python app.py} για να τρέξουμε την εφαρμογή.
+	\item Ανοίγουμε έναν browser και γράφουμε στη μπάρα διευθύνσεων \texttt{http://127.0.0.1:5000/}, αμέσως μετά θα δούμε το διαχειριστικό περιβάλλον της εφαρμογής μας.
+\end{itemize}
+Οι λειτουργίες που υποστηρίζονται είναι:
+\begin{itemize}
+    \item \textbf{Εγγραφή νέου πελάτη}\\
+    Για να εγγραφείτε πρέπει να συμπληρωθούν τα παρακάτω πεδία:
+    \begin{itemize}
+        \item First name (μικρό όνομα, π.χ. John)
+        \item Last name (επώνυμο, π.χ. Doe)
+        \item Email (διεύθυνση ηλεκτρονικού ταχυδρομείου, π.χ. john.doe@gmail.com)
+        \item Credit info (αριθμός πιστωτικής κάρτας, π.χ. 1234 5678 ...) (χωρίς κενά)
+    \end{itemize}
+    Πατήστε το μπλε κουμπί για εγγραφή.
+
+    \item \textbf{Δημιουργία νέας εκδήλωσης}\\
+    Για να δημιουργήσετε μια νέα εκδήλωση απαιτούνται οι παρακάτω πληροφορίες:
+    \begin{itemize}
+        \item Όνομα εκδήλωσης
+        \item Τύπος εκδήλωσης (π.χ. festival, comedy show, συναυλία)
+        \item Ώρα διεξαγωγής σε 12 hour format (π.χ. 10:40 PM)
+        \item Ημερομηνία διεξαγωγής σε format \texttt{<month>/<day>/<year>} (π.χ. 08/15/2025)
+        \item Χωρητικότητα του χώρου διεξαγωγής σε θέσεις
+        \item Πλήθος VIP θέσεων
+        \item Πλήθος θέσεων πρώτης γραμμής
+        \item Πλήθος υπολοίπων θέσεων
+        \item Τιμή θέσης VIP
+        \item Τιμή θέσης πρώτης γραμμής
+        \item Τιμή κανονικής θέσης
+    \end{itemize}
+    Πατήστε το μπλε κουμπί για δημιουργία.
+
+    \item \textbf{Κράτηση εισιτηρίου}\\
+    Για να κάνετε κράτηση εισιτηρίου:
+    \begin{enumerate}
+        \item Διαλέξτε την εκδήλωση από το dropdown menu.
+        \item Εισάγετε τη διεύθυνση e-mail.
+        \item Εισάγετε το πλήθος των εισιτηρίων που θέλετε.
+    \end{enumerate}
+    Για επιβεβαίωση πατάμε το μπλε κουμπί.
+
+    \item \textbf{Εύρεση θέσης}\\
+    Με την επιλογή του ονόματος της εκδήλωσης (μέσω του drop-down menu) θα εμφανίζονται οι θέσεις που είναι κενές.
+
+    \item \textbf{Ακύρωση εκδήλωσης}\\
+    Για να ακυρωθεί η εκδήλωση, επιλέγουμε το όνομα από το drop-down menu.
+
+    \item \textbf{Ακύρωση κράτησης}\\
+    Για να ακυρωθεί η κράτηση, εισάγουμε το mail με το οποίο έγινε η κράτηση. Όταν πατηθεί το μπλε κουμπί, η κράτηση ή οι κρατήσεις που έγιναν με αυτό το mail είναι άκυρες.
+
+    \item \textbf{Εμφάνιση κέρδους}
+    \begin{enumerate}
+        \item Επιλέγουμε την εκδήλωση που θέλουμε.
+        \item Επιλέγουμε τύπο εκδήλωσης.
+    \end{enumerate}
+    Πατώντας το \texttt{View} θα εμφανίζονται τα ανάλογα αποτελέσματα με βάση την είσοδο.
+
+    \item \textbf{Εμφάνιση ενεργών κρατήσεων}
+    \begin{enumerate}
+        \item Επιλογή ημ/νίας έναρξης.
+        \item Επιλογή ημ/νίας τερματισμού.
+    \end{enumerate}
+    Πατώντας το κουμπί θα εμφανιστούν οι κρατήσεις που βρίσκονται εντός αυτού του χρονικού διαστήματος.
+
+    \item \textbf{Στατιστικά στοιχεία}
+    \begin{itemize}
+        \item Η πιο δημοφιλής εκδήλωση.
+        \item Η εκδήλωση που έκανε τον περισσότερο τζίρο.
+    \end{itemize}
+
+    \item \textbf{Εμφάνιση δεδομένων για πελάτες, εκδηλώσεις, εισιτήρια, κρατήσεις}\\
+    Οι πληροφορίες αυτές βρίσκονται στο τέλος της σελίδας, όπου και είναι εμφανείς οι πίνακες της βάσης δεδομένων.
 \end{itemize}
 \subsection*{Περιγραφή των περιορισμών της υλοποίησης}
 Δεδομένης της φύσης του project αλλά και της υλοποίησης, υπάρχουν οι εξής περιορισμοί:
