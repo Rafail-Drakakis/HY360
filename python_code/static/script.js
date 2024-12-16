@@ -160,7 +160,7 @@ async function update_event_chooser(container_name) {
                 container.removeChild(container.firstChild);
             }
 
-            if(container_name == "PES"){
+            if(container_name == "pes"){
                 var option = document.createElement("option");
                 option.value = "All";
                 option.innerHTML = "All events";
@@ -365,7 +365,7 @@ document.getElementById("addEventForm").addEventListener(
                 update_event_chooser("bookEventIdselect");
                 update_event_chooser("searchSeatsIdselect");
                 update_event_chooser("cancelEventIdselect");
-                update_event_chooser("PES");
+                update_event_chooser("pes");
             } else {
                 showMessage(result.message, "error");
             }
@@ -457,18 +457,19 @@ document.getElementById("bookTicketsForm").addEventListener(
 document.getElementById("cancelReservationForm").addEventListener(
     "submit",
     async (e) => {
+        console.log("hello from cancel 2")
         e.preventDefault();
         const reservationId = document.getElementById("reservationId").value;
         try {
             const response = await fetch(
                 `${API_URL}/cancel_reservation/${reservationId}`,
                 {
-                    method: "DELETE",
+                    method: "GET",
                 },
             );
             const result = await response.json();
             if (response.status === 200) {
-                showMessage(result.message, "success");
+                showMessage(result.message, "reservation cancelled");
                 setTimeout(table_all(), 500);
             } else {
                 showMessage(result.message, "error");
@@ -481,6 +482,39 @@ document.getElementById("cancelReservationForm").addEventListener(
         }
     },
 );
+
+
+// Function to cancel an event 
+document.getElementById("cancelEventForm").addEventListener(
+    "submit",
+    async (e) => {
+        e.preventDefault();
+        console.log("hello from cancel 1")
+        const reservationId = document.getElementById("cancelEventIdselect").value;
+        try {
+            const response = await fetch(
+                `${API_URL}/cancel_reservation/${reservationId}`,
+                {
+                    method: "GET",
+                },
+            );
+            console.log("hello from cancel 12")
+            const result = await response.json();
+            if (response.status === 200) {
+                showMessage(result.message, "event cancelled");
+                setTimeout(table_all(), 500);
+            } else {
+                showMessage(result.message, "error");
+            }
+        } catch (error) {
+            showMessage("Error canceling event. Try again.", "error");
+            console.log("Error", error.stack);
+            console.log("Error", error.name);
+            console.log("Error", error.message);
+        }
+    },
+);
+
 // Function to view tickets left for all events
 document.getElementById("refresh_render").addEventListener(
     "click",
@@ -490,24 +524,27 @@ document.getElementById("refresh_render").addEventListener(
 );
 // Function to view event profits
 document.getElementById("profitsForm").addEventListener(
-    "sumbit",
+    "submit",
     async (e) => {
         e.preventDefault();
+        console.log("start here?");
         const profit_info = {
-            eid: document.getElementById("PES").value,
-            type: document.getElementById("PTS").value,
+            eid: document.getElementById("pes").value,
+            type: document.getElementById("pts").value,
         };
+        console.log("here?");
         try {
-            const response = await fetch(`${API_URL}/event_revenue`, {
+            const response = await fetch(`${API_URL}/revenue_event`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(profit_info),
             });
+            console.log("here here?");
             const result = await response.json();
-            if (response.status === 201) {
+            if (response.status === 200) {
                 document.getElementById("eventSProfits_container").innerText =
                     JSON
-                        .stringify(profits, null, 2);
+                        .stringify(result.total_revenue, null, 2);
                 showMessage("Successfully retrieved profits", "success");
             } else {
                 showMessage(result.message, "error");
@@ -520,6 +557,8 @@ document.getElementById("profitsForm").addEventListener(
         }
     },
 );
+
+
 document.getElementById("viewReservationsForm").addEventListener(
     "submit",
     async (e) => {

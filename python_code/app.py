@@ -306,7 +306,7 @@ def delete_event(eid):
 
 
 
-@app.route('/tickets/<int:tid>', methods=['DELETE'])
+@app.route('/tickets/<int:tid>', methods=['GET'])
 def delete_ticket(tid):
     conn = db_connection()
     cursor = conn.cursor()
@@ -483,7 +483,7 @@ def reserve_tickets():
         return jsonify({'message': 'Error'}), 500
 
 
-@app.route('/cancel_reservation/<int:rid>', methods=['DELETE'])
+@app.route('/cancel_reservation/<int:rid>', methods=['GET'])
 def cancel_reservation(rid):
     conn = db_connection()
     cursor = conn.cursor()
@@ -512,14 +512,29 @@ def cancel_reservation(rid):
 def cancel_event(eid):
     conn = db_connection()
     cursor = conn.cursor()
+    data = request.json
+    eid = data['eid']
+    print("hello" + eid)
     try:
         cursor.execute("""
-        SELECT rid FROM Reservation WHERE eid = ?
-        """, (eid,))
-        reservations = cursor.fetchall()
-        for reservation in reservations:
-            cancel_reservation(reservation['rid'])
+        DELETE FROM Contains 
+        WHERE rid IN 
+        (SELECT FROM  Reservation WHERE eid = ?")""",(eid,))
+        conn.commit()
+        cursor.execute("""
+        DELETE FROM Has
+        WHERE rid IN 
+        (SELECT FROM  Reservation WHERE eid = ?")""",(eid,))
+        conn.commit()
+        cursor.execute("""
+        DELETE FROM Ticket
+        WHERE tid IN 
+        (SELECT FROM Has WHERE eid = ?")""",(eid,))
+        cursor.execute("DELETE FROM HAS WHERE eid = ? ", (eid,))
+        conn.commit()
         cursor.execute("DELETE FROM Event WHERE eid = ?", (eid,))
+        conn.commit()
+        cursor.execute("DELETE FROM Reservation WHERE eid = ?", (eid,))
         conn.commit()
         conn.close()
         return jsonify({'message': f'Event with ID {eid} canceled and all reservations refunded.'}), 200
@@ -528,38 +543,40 @@ def cancel_event(eid):
         return jsonify({'message': 'Error'}), 500
 
 
-@app.route('/event_revenue', methods=['POST'])
-def event_revenue(eid):
-
+@app.route('/revenue_event', methods=['POST'])
+def event_revenue():
     data = request.json
+    print(data)
     if(data['type'] == "VIP"):
         return jsonify({'message': 'Not implemented yet'}), 500
+    else:
+        conn = db_connection()
+        cursor = conn.cursor()
+        if(data['eid'] != "All"):
+            try:
+                cursor.execute("""
+                SELECT SUM(total_price) FROM Reservation WHERE eid = ?
+                """, (int(data["eid"]),))
+                revenue = cursor.fetchone()[0]
+                conn.close()
+                return jsonify({'total_revenue': revenue if revenue else 0})
+            except:
+                conn.close()
+                return jsonify({'message': 'Error'}), 500
+        else: 
+            try:
+                print("hello from try")
+                cursor.execute("""
+                SELECT SUM(total_price) FROM Reservation
+                """)
+                revenue = cursor.fetchone()[0]
+                conn.close()
+                return jsonify({'total_revenue': revenue if revenue else 0})
+            except:
+                conn.close()
+                return jsonify({'message': 'Error2'}), 500
+    return jsonify({'message': 'Error3'}), 500
     
-    conn = db_connection()
-    cursor = conn.cursor()
-    if(data['eid'] != "All"):
-        try:
-            cursor.execute("""
-            SELECT SUM(total_price) AS total_revenue FROM Reservation WHERE eid = ?
-            """, (int(eid),))
-            revenue = cursor.fetchone()[0]
-            conn.close()
-            return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
-        except:
-            conn.close()
-            return jsonify({'message': 'Error'}), 500
-    else: 
-        try:
-            cursor.execute("""
-            SELECT SUM(total_price) AS total_revenue FROM Reservation
-            """)
-            revenue = cursor.fetchone()[0]
-            conn.close()
-            return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
-        except:
-            conn.close()
-            return jsonify({'message': 'Error2'}), 500
- 
 
 
 @app.route('/most_popular_event', methods=['GET'])
