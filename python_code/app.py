@@ -542,20 +542,24 @@ def event_revenue(eid):
             cursor.execute("""
             SELECT SUM(total_price) AS total_revenue FROM Reservation WHERE eid = ?
             """, (int(eid),))
-            revenue = cursor.fetchone()
+            revenue = cursor.fetchone()[0]
             conn.close()
             return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
         except:
             conn.close()
             return jsonify({'message': 'Error'}), 500
     else: 
-        cursor.execute("""
-        SELECT SUM(total_price) AS total_revenue FROM Reservation
-        """)
-        revenue = cursor.fetchone()
-        conn.close()
-        return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
-
+        try:
+            cursor.execute("""
+            SELECT SUM(total_price) AS total_revenue FROM Reservation
+            """)
+            revenue = cursor.fetchone()[0]
+            conn.close()
+            return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
+        except:
+            conn.close()
+            return jsonify({'message': 'Error2'}), 500
+ 
 
 
 @app.route('/most_popular_event', methods=['GET'])
@@ -571,9 +575,11 @@ def most_popular_event():
         ORDER BY reservations_count DESC 
         LIMIT 1
         """)
-        event = cursor.fetchone()
+        pos = cursor.fetchone()
+        event = pos[0]
+        count = pos[1]
         conn.close()
-        return jsonify(event if event else {})
+        return jsonify({"name": event, 'reservations_count': count})
     except:
         conn.close()
         return jsonify({'message': 'Error'}), 500
@@ -594,9 +600,11 @@ def highest_revenue_event():
         ORDER BY revenue DESC 
         LIMIT 1
         """, (data['start_date'], data['end_date']))
-        event = cursor.fetchone()
+        pos = cursor.fetchone()
+        event = pos[0]
+        revenue = pos[1]
         conn.close()
-        return jsonify(event if event else {})
+        return jsonify({"name": event, "revenue":revenue})
     except:
         conn.close()
         return jsonify({'message': 'Error'}), 500
@@ -609,13 +617,13 @@ def active_reservations():
     data = request.json
     try:
         cursor.execute("""
-        SELECT *
+        SELECT cid, eid, date, tickets_number, total_price
         FROM Reservation 
         WHERE Reservation.date BETWEEN ? AND ? 
         """, (data['start_date'], data['end_date']))
         active = [dict(row) for row in cursor.fetchall()]
         conn.close()
-        return jsonify(active)
+        return jsonify(active), 200
     except:
         conn.close()
         return jsonify({'message': 'Error'}), 500
@@ -634,7 +642,7 @@ def revenue_by_ticket_type():
         JOIN Contains ON Ticket.tid = Contains.tid 
         GROUP BY type
         """)
-        revenue = cursor.fetchall()
+        revenue = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return jsonify(revenue)
     except:

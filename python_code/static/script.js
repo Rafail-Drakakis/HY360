@@ -489,33 +489,37 @@ document.getElementById("refresh_render").addEventListener(
     },
 );
 // Function to view event profits
-document.getElementById("profitsForm").addEventListener("sumbit", async (e) => {
-    e.preventDefault();
-    const profit_info = {
-        eid: document.getElementById("PES").value,
-        type: document.getElementById("PTS").value,
-    };
-    try {
-        const response = await fetch(`${API_URL}/event_revenue`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(profit_info),
-        });
-        const result = await response.json();
-        if (response.status === 201) {
-            document.getElementById("eventSProfits_container").innerText = JSON
-                .stringify(profits, null, 2);
-            showMessage("Successfully retrieved profits", "success");
-        } else {
-            showMessage(result.message, "error");
+document.getElementById("profitsForm").addEventListener(
+    "sumbit",
+    async (e) => {
+        e.preventDefault();
+        const profit_info = {
+            eid: document.getElementById("PES").value,
+            type: document.getElementById("PTS").value,
+        };
+        try {
+            const response = await fetch(`${API_URL}/event_revenue`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(profit_info),
+            });
+            const result = await response.json();
+            if (response.status === 201) {
+                document.getElementById("eventSProfits_container").innerText =
+                    JSON
+                        .stringify(profits, null, 2);
+                showMessage("Successfully retrieved profits", "success");
+            } else {
+                showMessage(result.message, "error");
+            }
+        } catch (error) {
+            showMessage("Error retrieving profits. Try again.", "error");
+            console.log("Error", error.stack);
+            console.log("Error", error.name);
+            console.log("Error", error.message);
         }
-    } catch (error) {
-        showMessage("Error retrieving profits. Try again.", "error");
-        console.log("Error", error.stack);
-        console.log("Error", error.name);
-        console.log("Error", error.message);
-    }
-});
+    },
+);
 document.getElementById("viewReservationsForm").addEventListener(
     "submit",
     async (e) => {
@@ -531,16 +535,16 @@ document.getElementById("viewReservationsForm").addEventListener(
                 body: JSON.stringify(reservation_constrains),
             });
             const result = await response.json();
-            if (response.status === 201) {
+            if (response.status === 200) {
                 if (Object.keys(result).length > 0) {
-                    table_render("viewReservations_container", result);
+                    table_render("ActiveReservationsResult", result);
+                    showMessage(
+                        `Found ${
+                            Object.keys(result).length
+                        } reservations that fit the criteria.`,
+                        "success",
+                    );
                 }
-                showMessage(
-                    `Found ${
-                        Object.keys(result).length
-                    } reservations that fit the criteria.`,
-                    "success",
-                );
             } else {
                 showMessage("No active reservations found.", "info");
             }
@@ -559,6 +563,7 @@ document.getElementById("mostPopularEvent").addEventListener(
         try {
             const response = await fetch(`${API_URL}/most_popular_event`);
             const event = await response.json();
+            console.log(event);
             if (event.name) {
                 showMessage(
                     `Most popular event is ${event.name} with ${event.reservations_count} reservations.`,
@@ -596,7 +601,7 @@ document.getElementById("highestProfitEvent").addEventListener(
             const event = await response.json();
             if (event.name) {
                 showMessage(
-                    `Highest profit event is ${event.name} with revenue of ${event.revenue}.`,
+                    `Highest profit event is ${event.name} with revenue of ${event.revenue}€.`,
                     "success",
                 );
             } else {
