@@ -159,6 +159,15 @@ async function update_event_chooser(container_name) {
             while (container.firstChild) {
                 container.removeChild(container.firstChild);
             }
+
+            if(container_name == "PES"){
+                var option = document.createElement("option");
+                option.value = "All";
+                option.innerHTML = "All events";
+                container.appendChild(option);
+ 
+            }
+
             for (let i = 0; i < Object.keys(jsonData).length; i++) {
                 var option = document.createElement("option");
                 option.value = jsonData[i].eid;
@@ -356,7 +365,7 @@ document.getElementById("addEventForm").addEventListener(
                 update_event_chooser("bookEventIdselect");
                 update_event_chooser("searchSeatsIdselect");
                 update_event_chooser("cancelEventIdselect");
-                // update_event_chooser("cancelEventIdselect");
+                update_event_chooser("PES");
             } else {
                 showMessage(result.message, "error");
             }
@@ -480,35 +489,69 @@ document.getElementById("refresh_render").addEventListener(
     },
 );
 // Function to view event profits
-document.getElementById("profitsForm").addEventListener("sumbit", async () => {
+document.getElementById("profitsForm").addEventListener("sumbit", async (e) => {
+    e.preventDefault();
+    const profit_info = {
+        eid: document.getElementById("PES").value,
+        type: document.getElementById("PTS").value,
+    };
     try {
-        const response = await fetch(`${API_URL}/events`);
-        const events = await response.json();
-        const profits = await Promise.all(
-            events.map(async (event) => {
-                const profitResponse = await fetch(
-                    `${API_URL}/event_revenue/${event.eid}`,
-                );
-                const revenue = await profitResponse.json();
-                return {
-                    eventName: event.name,
-                    revenue: revenue.total_revenue,
-                };
-            }),
-        );
-        document.getElementById("eventStatisticsResult").innerText = JSON
-            .stringify(profits, null, 2);
-        showMessage(
-            "Successfully retrieved profits for all events.",
-            "success",
-        );
+        const response = await fetch(`${API_URL}/event_revenue`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(profit_info),
+        });
+        const result = await response.json();
+        if (response.status === 201) {
+            document.getElementById("eventSProfits_container").innerText = JSON
+                .stringify(profits, null, 2);
+            showMessage("Successfully retrieved profits", "success");
+        } else {
+            showMessage(result.message, "error");
+        }
     } catch (error) {
-        showMessage("Error fetching profits. Try again.", "error");
+        showMessage("Error retrieving profits. Try again.", "error");
         console.log("Error", error.stack);
         console.log("Error", error.name);
         console.log("Error", error.message);
     }
 });
+document.getElementById("viewReservationsForm").addEventListener(
+    "submit",
+    async (e) => {
+        e.preventDefault();
+        const reservation_constrains = {
+            start_date: document.getElementById("eventDateS").value,
+            end_date: document.getElementById("eventDateF").value,
+        };
+        try {
+            const response = await fetch(`${API_URL}/active_reserve`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(reservation_constrains),
+            });
+            const result = await response.json();
+            if (response.status === 201) {
+                if (Object.keys(result).length > 0) {
+                    table_render("viewReservations_container", result);
+                }
+                showMessage(
+                    `Found ${
+                        Object.keys(result).length
+                    } reservations that fit the criteria.`,
+                    "success",
+                );
+            } else {
+                showMessage("No active reservations found.", "info");
+            }
+        } catch (error) {
+            showMessage("Error viewing reservation. Try again.", "error");
+            console.log("Error", error.stack);
+            console.log("Error", error.name);
+            console.log("Error", error.message);
+        }
+    },
+);
 // Function to view the most popular event
 document.getElementById("mostPopularEvent").addEventListener(
     "click",

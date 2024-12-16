@@ -376,17 +376,17 @@ def get_price_of_ticket(eid, seat_type):
 
 @app.route('/available_seats/<int:eid>', methods=['GET'])
 def get_available_seats_all(eid):
-        conn = db_connection()
-        cursor = conn.cursor()
-    # try:
+    conn = db_connection()
+    cursor = conn.cursor()
+    try:
         cursor.execute("""
         SELECT seat_number, type FROM Ticket 
         WHERE availability = 1 AND tid IN (SELECT tid FROM Has WHERE eid = ?)
         """, (eid,))
-        tickets = [dict(row) for row in cursor.fetchall()]
+        seats = [dict(row) for row in cursor.fetchall()]
         conn.close()
-        return jsonify(tickets)
-    # except:
+        return jsonify(seats)
+    except:
         conn.close()
         return jsonify({'message': 'Error'}), 500
 
@@ -432,12 +432,25 @@ def get_cid_from_email(mail):
 @app.route('/reserve_tickets', methods=['POST'])
 def reserve_tickets():
     data = request.json
+    price_arr = []
+    for s_type in list(data["tickets"].keys()):
+        jdata, status = get_price_of_ticket(data['eid'], s_type)
+        if(status != 500):
+            price_arr.append(jdata.get_json()['price'])
+        else:
+            return jsonify({'message': 'Error'}), 500
+    
+    print(list(data["tickets"].values()))
+    print(price_arr)
+    data['total_price'] = sum([a * b for a, b in zip(list(data["tickets"].values()), price_arr)])
+
     s, msg, data["tickets"] = check_we_have_enough(data)
     if s == 500:
         return msg, s
     s, msg, data["cid"]= get_cid_from_email(data["cid"])
     if s == 500:
         return msg, s
+
     conn = db_connection()
     cursor = conn.cursor()
 
@@ -448,6 +461,7 @@ def reserve_tickets():
         """, (data['eid'], data['cid'], data['date'], data['total_price'], data['tickets_number']))
         rid = cursor.lastrowid
         tickets = data['tickets']
+        
         for tid in tickets:
             cursor.execute("""
             UPDATE Ticket SET availability = 0 WHERE tid = ?
@@ -455,6 +469,12 @@ def reserve_tickets():
             cursor.execute("""
             INSERT INTO Contains (eid, tid) VALUES (?, ?)
             """, (data['eid'], tid))
+        
+        cursor.execute("""
+        INSERT INTO Makes(cid, rid)
+        VALUES (?, ?)
+        """, (data['cid'],rid))
+
         conn.commit()
         conn.close()
         return jsonify({'message': 'Reservation completed successfully!', 'reservation_id': rid}), 201
@@ -469,7 +489,7 @@ def cancel_reservation(rid):
     cursor = conn.cursor()
     try:
         cursor.execute("""
-        SELECT eid, tid FROM Contains 
+        SELECT tid FROM Contains 
         WHERE tid IN (SELECT tid FROM Ticket WHERE tid IN 
                     (SELECT tid FROM Contains WHERE eid IN (SELECT eid FROM Reservation WHERE rid = ?)))
         """, (rid,))
@@ -508,20 +528,34 @@ def cancel_event(eid):
         return jsonify({'message': 'Error'}), 500
 
 
-@app.route('/event_revenue/<int:eid>', methods=['GET'])
+@app.route('/event_revenue', methods=['POST'])
 def event_revenue(eid):
+
+    data = request.json
+    if(data['type'] == "VIP"):
+        return jsonify({'message': 'Not implemented yet'}), 500
+    
     conn = db_connection()
     cursor = conn.cursor()
-    try:
+    if(data['eid'] != "All"):
+        try:
+            cursor.execute("""
+            SELECT SUM(total_price) AS total_revenue FROM Reservation WHERE eid = ?
+            """, (int(eid),))
+            revenue = cursor.fetchone()
+            conn.close()
+            return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
+        except:
+            conn.close()
+            return jsonify({'message': 'Error'}), 500
+    else: 
         cursor.execute("""
-        SELECT SUM(total_price) AS total_revenue FROM Reservation WHERE eid = ?
-        """, (eid,))
+        SELECT SUM(total_price) AS total_revenue FROM Reservation
+        """)
         revenue = cursor.fetchone()
         conn.close()
         return jsonify({'total_revenue': revenue['total_revenue'] if revenue else 0})
-    except:
-        conn.close()
-        return jsonify({'message': 'Error'}), 500
+
 
 
 @app.route('/most_popular_event', methods=['GET'])
@@ -566,6 +600,27 @@ def highest_revenue_event():
     except:
         conn.close()
         return jsonify({'message': 'Error'}), 500
+
+
+@app.route('/active_reserve', methods=['POST'])
+def active_reservations():
+    conn = db_connection()
+    cursor = conn.cursor()
+    data = request.json
+    try:
+        cursor.execute("""
+        SELECT *
+        FROM Reservation 
+        WHERE Reservation.date BETWEEN ? AND ? 
+        """, (data['start_date'], data['end_date']))
+        active = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return jsonify(active)
+    except:
+        conn.close()
+        return jsonify({'message': 'Error'}), 500
+
+
 
 
 @app.route('/revenue_by_ticket_type', methods=['GET'])
