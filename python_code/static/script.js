@@ -12,14 +12,20 @@ function showMessage(message, type = "info") {
     }, 3000);
 }
 // Helper function to display the tables
-async function table_render(table_name) {
+async function table_render(table_name,table_json) {
     try {
-        const response = await fetch(`${API_URL}/` + table_name, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        });
-        let jsonData = await response.json();
-        
+        let jsonData;
+        if(table_json == null){
+            const response = await fetch(`${API_URL}/` + table_name, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+            jsonData = await response.json();
+        }
+        else{
+            jsonData = table_json;
+        }
+
         if(!Object.keys(jsonData).length){
             return;
         }
@@ -74,13 +80,13 @@ async function table_render(table_name) {
 
 function table_all() {
     
-    table_render("customers");
-    table_render("events");
-    table_render("tickets");
-    table_render("reservations");
-    table_render("contains");
-    table_render("has");
-    table_render("makes");
+    table_render("customers",null);
+    table_render("events",null);
+    table_render("tickets",null);
+    table_render("reservations",null);
+    table_render("contains",null);
+    table_render("has",null);
+    table_render("makes",null);
 }
 
 // Helper function to populate tickets
@@ -169,7 +175,6 @@ async function update_event_chooser(container_name) {
     }
 }
 async function update_tickets_chooser() {
-    console.log("was called"); 
     var vip_price = "";
     var front_price = "";
     var normal_price = "";
@@ -188,9 +193,6 @@ async function update_tickets_chooser() {
                 throw response.status;
             }
             vip_price = String(result.price) + "€";
-            console.log("vip price was" + String(vip_price));
-            console.log("object was" + result);
-            console.log("first object was" + result[0]);
             response = await fetch(`${API_URL}/ticket_price/` + eid + "/" + "FrontRow", {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -200,7 +202,6 @@ async function update_tickets_chooser() {
                 throw response.status;
             } 
             front_price = String(result.price) + "€";
-            console.log("f price was" + front_price);
             response = await fetch(`${API_URL}/ticket_price/` + eid + "/" + "Normal", {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -210,7 +211,6 @@ async function update_tickets_chooser() {
                 throw response.status;
             }
             normal_price = String(result.price) + "€";
-            console.log("normal price was" + normal_price);
             break event_loop;
         } catch (error) {
             showMessage("error updating checkbox");
@@ -231,6 +231,8 @@ async function update_tickets_chooser() {
     for (let i = 0; i < ticket_num; i++) {
         var label = document.createElement("label");
         label.innerText = "Type for ticket #" + (Number(i) + 1) + ":";
+        var label2 = document.createElement("label");
+        label2.innerText = "\n";
         var t_type = document.createElement("select");
         var type1 = document.createElement("option");
         type1.value = "VIP";
@@ -244,47 +246,13 @@ async function update_tickets_chooser() {
         type3.value = "Normal";
         type3.innerHTML = "Normal" + "(" + normal_price + ")";
         t_type.appendChild(type3);
+        t_type.id = "ticket" + i;
         container.appendChild(label);
         container.appendChild(t_type);
+        container.appendChild(label2);
     }
     return;
 }
-document.getElementById("bookEventIdselect").addEventListener(
-    "change",
-    async (e) => {
-        e.preventDefault();
-        console.log("hello");
-        try {
-            const response = await fetch(
-                `${API_URL}/available_seats/` +
-                    getElementById("bookEventIdselect").value,
-                {
-                    method: "GET",
-                    headers: { "Content-Type": "application/json" },
-                },
-            );
-            let jsonData = await response.json();
-            console.log(Object.keys(jsonData).length);
-            let container = document.getElementById("tickets_select");
-            while (container.firstChild) {
-                container.removeChild(container.firstChild);
-            }
-            for (let i = 0; i < Object.keys(jsonData).length; i++) {
-                var option = document.createElement("option");
-                option.value = jsonData[i].tid;
-                option.innerHTML = jsonData[i].type + " " +
-                    jsonData[i].seat_number + " " + jsonData[i].price +
-                    "(euro)";
-                container.appendChild(option);
-            }
-        } catch (error) {
-            showMessage("error updating checkbox");
-            console.log("Error", error.stack);
-            console.log("Error", error.name);
-            console.log("Error", error.message);
-        }
-    },
-);
 // Function to handle adding a new customer
 document.getElementById("addCustomerForm").addEventListener(
     "submit",
@@ -405,17 +373,18 @@ document.getElementById("searchSeatsForm").addEventListener(
     "submit",
     async (e) => {
         e.preventDefault();
-        const eventId = document.getElementById("eventId").value;
+        const eventId = document.getElementById("searchSeatsIdselect").value;
         try {
             const response = await fetch(
-                `${API_URL}/available_tickets/${eventId}`,
+                `${API_URL}/available_seats/${eventId}`,
             );
             const seats = await response.json();
-            if (seats.length > 0) {
-                document.getElementById("availableSeatsResult").innerText = JSON
-                    .stringify(seats, null, 2);
+            if (Object.keys(seats).length > 0) {
+                table_render("availableSeatsResult", seats);
                 showMessage(
-                    `Found ${seats.length} available seats for event ID ${eventId}.`,
+                    `Found ${
+                        Object.keys(seats).length
+                    } available seats for event ID ${eventId}.`,
                     "success",
                 );
             } else {
@@ -434,18 +403,28 @@ document.getElementById("bookTicketsForm").addEventListener(
     "submit",
     async (e) => {
         e.preventDefault();
+        var arr = [];
+        for (
+            let i = 0;
+            i < document.getElementById("numOfTickets").value;
+            i++
+        ) {
+            arr.push(document.getElementById("ticket" + i).value);
+        }
+        const counts = {};
+        arr.forEach(function (x) {
+            counts[x] = (counts[x] || 0) + 1;
+        });
         const booking = {
-            eid: document.getElementById("bookEventId").value,
-            cid: document.getElementById("customerId").value,
+            eid: document.getElementById("bookEventIdselect").value,
+            cid: document.getElementById("customerIdmail").value,
             date: new Date().toISOString().split("T")[0], // Current date
-            total_price: 100, // Placeholder total price (calculation can be updated)
-            tickets_number: document.getElementById("numTickets").value,
-            tickets: Array.from({
-                length: document.getElementById("numTickets").value,
-            }, (_, i) => i + 1), // Dummy ticket IDs
+            total_price: 0, //placeholder
+            tickets_number: document.getElementById("numOfTickets").value,
+            tickets: counts,
         };
         try {
-            const response = await fetch(`${API_URL}/reserve_tickets_temp`, {
+            const response = await fetch(`${API_URL}/reserve_tickets`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(booking),

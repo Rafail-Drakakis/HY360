@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import sqlite3
+import json
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -375,34 +376,71 @@ def get_price_of_ticket(eid, seat_type):
 
 @app.route('/available_seats/<int:eid>', methods=['GET'])
 def get_available_seats_all(eid):
-    conn = db_connection()
-    cursor = conn.cursor()
-    try:
+        conn = db_connection()
+        cursor = conn.cursor()
+    # try:
         cursor.execute("""
-        SELECT * FROM Ticket 
-        WHERE availability = 1 AND tid IN (SELECT tid FROM Contains WHERE eid = ?)
-        """, (seat_type, eid))
+        SELECT seat_number, type FROM Ticket 
+        WHERE availability = 1 AND tid IN (SELECT tid FROM Has WHERE eid = ?)
+        """, (eid,))
         tickets = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return jsonify(tickets)
-    except:
+    # except:
         conn.close()
         return jsonify({'message': 'Error'}), 500
 
 
+def check_we_have_enough(data):
+    conn = db_connection()
+    cursor = conn.cursor()
+    tids = []
+    wanted_count = list(data["tickets"].values())
+    try:
+        for seat_type in enumerate((list(data["tickets"].keys()))):
+            cursor.execute("""
+            SELECT tid FROM Ticket 
+            WHERE availability = 1 AND type= ? AND tid IN (SELECT tid FROM Has WHERE eid = ?)
+            LIMIT %s
+            """ %wanted_count[seat_type[0]],(seat_type[1],data["eid"]))
+            tmp_tids = [row[0] for row in cursor.fetchall()]
+            tids.extend(tmp_tids)
+    except:
+        conn.close()
+        return  500,jsonify({'message': 'Error fetching tids'}), 1 
 
-@app.route('/reserve_tickets_temp', methods=['POST'])
-def reserve_tickets_temp():
-    data = request.json
-    rid = 1
-    print(data)
-    return jsonify({'message': 'temp!', 'reservation_id': rid}), 201
+    if (len(tids) < sum(wanted_count)):
+        return  500, jsonify({'message': 'Error: Not enough available seats'}), 1
+    return  0, 0, tids
+
+def get_cid_from_email(mail):
+    conn = db_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+        SELECT cid FROM Customer 
+        WHERE mail is ?
+        """, (mail,))
+        cid = cursor.fetchone()[0]
+        return 0, 0, cid
+    except:
+        conn.close()
+        return 500, jsonify({'message': 'Error finding customer from email'}), 1
+
+
 
 @app.route('/reserve_tickets', methods=['POST'])
 def reserve_tickets():
+    data = request.json
+    s, msg, data["tickets"] = check_we_have_enough(data)
+    if s == 500:
+        return msg, s
+    s, msg, data["cid"]= get_cid_from_email(data["cid"])
+    if s == 500:
+        return msg, s
     conn = db_connection()
     cursor = conn.cursor()
-    data = request.json
+
     try:
         cursor.execute("""
         INSERT INTO Reservation (eid, cid, date, total_price, tickets_number)

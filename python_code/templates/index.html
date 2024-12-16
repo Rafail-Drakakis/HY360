@@ -54,8 +54,8 @@
                     <select id="bookEventIdselect" name="event_select" required>
                         <option value="noEvent">No event</option>
                     </select>
-                    <input type="text" id="customerId" placeholder="Customer email" required>
-                    <input type="text" id="numOfTickets" placeholder="Number of tickets" onchange="update_tickets_chooser()" required>
+                    <input type="text" id="customerIdmail" placeholder="Customer email" required>
+                    <input type="number" step="1" id="numOfTickets" placeholder="Number of tickets" oninput="update_tickets_chooser()" required>
                     <div id=bookTicketsFormdiv></div>
                     <button type="submit">Book Tickets</button>
                 </form>
@@ -71,7 +71,7 @@
                     </select>
                     <button type="submit">Search</button>
                 </form>
-                <div id="availableSeatsResult"></div>
+                <div id="availableSeatsResult_container"></div>
             </div>
             
             <div class="operation">
@@ -125,7 +125,7 @@
     
             <div class="operation">
                 <h2>View Event Statistics</h2>
-                <button id="mostPopularEvent">Most Popular Event</button>
+                <button id="mostPopularEvent">Most Popular Event (most tickets sold)</button>
                 <button id="highestProfitEvent">Event with Highest Profit</button>
                 <button id="refresh_render">Refresh Database</button>
                 <div id="eventStatisticsResult"></div>
