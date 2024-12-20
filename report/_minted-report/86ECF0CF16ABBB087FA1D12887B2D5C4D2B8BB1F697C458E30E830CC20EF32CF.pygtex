@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{ADD\PYGZus{}CUSTOMER}\PYG{p}{(}\PYG{n}{email}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{credit\PYGZus{}info}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{first\PYGZus{}name}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{last\PYGZus{}name}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{email}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{k}{not}\PYG{+w}{ }\PYG{n}{empty}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{first\PYGZus{}name}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{k}{not}\PYG{+w}{ }\PYG{n}{empty}
+\PYG{+w}{    		}\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{last\PYGZus{}name}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{k}{not}\PYG{+w}{ }\PYG{n}{empty}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{INSERT}\PYG{+w}{ }\PYG{k}{INTO}\PYG{+w}{ }\PYG{n}{Customer}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{email}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{credit\PYGZus{}info}\PYG{p}{,}
+\PYG{+w}{        }\PYG{n}{first\PYGZus{}name}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{last\PYGZus{}name}\PYG{p}{)}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{success}
+\PYG{+w}{    }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Missing required fields\PYGZdq{}}
+\end{Verbatim}

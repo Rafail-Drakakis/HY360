@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{ASSIGN\PYGZus{}TICKET\PYGZus{}TO\PYGZus{}EVENT}\PYG{p}{(}\PYG{n}{ticket\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}id}\PYG{+w}{ }\PYG{k}{exists}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{+w}{ }\PYG{k}{exists}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{INSERT}\PYG{+w}{ }\PYG{k}{INTO}\PYG{+w}{ }\PYG{n}{Has}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{ticket\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{p}{)}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{success}
+\PYG{+w}{    }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Invalid ticket or event\PYGZdq{}}
+\end{Verbatim}

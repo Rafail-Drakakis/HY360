@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{GET\PYGZus{}CUSTOMER\PYGZus{}RESERVATIONS}\PYG{p}{(}\PYG{n}{customer\PYGZus{}id}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{SELECT}\PYG{+w}{ }\PYG{o}{*}
+\PYG{+w}{    }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{Reservation}
+\PYG{+w}{    }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{customer\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{customer\PYGZus{}id}
+\PYG{+w}{    }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{reservation}\PYG{+w}{ }\PYG{n}{details}
+\end{Verbatim}

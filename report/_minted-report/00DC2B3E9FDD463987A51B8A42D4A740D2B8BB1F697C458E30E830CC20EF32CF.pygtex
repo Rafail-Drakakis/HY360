@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{CREATE}\PYG{+w}{ }\PYG{k}{TABLE}\PYG{+w}{ }\PYG{k}{Contains}\PYG{+w}{ }\PYG{p}{(}
+\PYG{+w}{    }\PYG{n}{eid}\PYG{+w}{ }\PYG{n+nb}{INT}\PYG{p}{,}
+\PYG{+w}{    }\PYG{n}{tid}\PYG{+w}{ }\PYG{n+nb}{INT}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{PRIMARY}\PYG{+w}{ }\PYG{k}{KEY}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{eid}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tid}\PYG{p}{),}
+\PYG{+w}{    }\PYG{k}{FOREIGN}\PYG{+w}{ }\PYG{k}{KEY}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{eid}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{REFERENCES}\PYG{+w}{ }\PYG{n}{Event}\PYG{p}{(}\PYG{n}{eid}\PYG{p}{),}
+\PYG{+w}{    }\PYG{k}{FOREIGN}\PYG{+w}{ }\PYG{k}{KEY}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{tid}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{REFERENCES}\PYG{+w}{ }\PYG{n}{Ticket}\PYG{p}{(}\PYG{n}{tid}\PYG{p}{)}
+\PYG{p}{);}
+\end{Verbatim}

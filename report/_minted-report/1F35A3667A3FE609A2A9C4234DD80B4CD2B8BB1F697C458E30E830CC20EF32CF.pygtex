@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{GET\PYGZus{}EVENT\PYGZus{}TICKETS}\PYG{p}{(}\PYG{n}{event\PYGZus{}id}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{SELECT}\PYG{+w}{ }\PYG{o}{*}
+\PYG{+w}{    }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{Ticket}
+\PYG{+w}{    }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{availability}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{TRUE}
+\PYG{+w}{    }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{available}\PYG{+w}{ }\PYG{n}{tickets}
+\end{Verbatim}

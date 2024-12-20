@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{UPDATE\PYGZus{}EVENT}\PYG{p}{(}\PYG{n}{event\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{new\PYGZus{}capacity}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{+w}{ }\PYG{k}{exists}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{new\PYGZus{}capacity}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{UPDATE}\PYG{+w}{ }\PYG{n}{Event}
+\PYG{+w}{        }\PYG{k}{SET}\PYG{+w}{ }\PYG{n}{capacity}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{new\PYGZus{}capacity}
+\PYG{+w}{        }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{success}
+\PYG{+w}{    }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Invalid event ID or capacity\PYGZdq{}}
+\end{Verbatim}

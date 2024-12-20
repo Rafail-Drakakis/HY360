@@ -1,0 +1,24 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{CREATE\PYGZus{}RESERVATION}\PYG{p}{(}\PYG{n}{customer\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}count}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{total\PYGZus{}price}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}count}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{total\PYGZus{}price}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{SELECT}\PYG{+w}{ }\PYG{n}{capacity}\PYG{+w}{ }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{Event}
+\PYG{+w}{        }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{eid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}
+\PYG{+w}{        }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{capacity}\PYG{+w}{ }\PYG{o}{\PYGZgt{}=}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}count}\PYG{p}{:}
+\PYG{+w}{            }\PYG{k}{INSERT}\PYG{+w}{ }\PYG{k}{INTO}\PYG{+w}{ }\PYG{n}{Reservation}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cid}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{eid}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{tickets\PYGZus{}number}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{total\PYGZus{}price}\PYG{p}{)}
+\PYG{+w}{            }\PYG{k}{VALUES}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{customer\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}count}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{total\PYGZus{}price}\PYG{p}{)}
+\PYG{+w}{            }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{reservation}\PYG{+w}{ }\PYG{n}{was}\PYG{+w}{ }\PYG{n}{successfully}\PYG{+w}{ }\PYG{n}{created}\PYG{p}{:}
+\PYG{+w}{                }\PYG{k}{FOR}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{+w}{ }\PYG{k}{TO}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}count}\PYG{p}{:}
+\PYG{+w}{                    }\PYG{k}{SELECT}\PYG{+w}{ }\PYG{n}{tid}\PYG{+w}{ }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{Ticket}
+\PYG{+w}{                    }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{eid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{availability}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{TRUE}
+\PYG{+w}{                    }\PYG{k}{LIMIT}\PYG{+w}{ }\PYG{l+m+mi}{1}
+\PYG{+w}{                    }\PYG{k}{UPDATE}\PYG{+w}{ }\PYG{n}{Ticket}
+\PYG{+w}{                    }\PYG{k}{SET}\PYG{+w}{ }\PYG{n}{availability}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{k}{FALSE}
+\PYG{+w}{                    }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{tid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{selected\PYGZus{}ticket\PYGZus{}id}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{eid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}
+\PYG{+w}{                }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{reservation}\PYG{+w}{ }\PYG{n}{ID}
+\PYG{+w}{            }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{                }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Reservation creation failed\PYGZdq{}}
+\PYG{+w}{        }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{            }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Not enough available capacity for the requested tickets\PYGZdq{}}
+\PYG{+w}{    }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Invalid ticket count or total price\PYGZdq{}}
+\end{Verbatim}

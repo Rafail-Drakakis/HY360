@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{+w}{    }\PYG{k}{SELECT}\PYG{+w}{ }\PYG{k}{SUM}\PYG{p}{(}\PYG{n}{price}\PYG{p}{)}\PYG{+w}{ }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{Ticket}
+\PYG{+w}{    }\PYG{k}{JOIN}\PYG{+w}{ }\PYG{n}{Reservation}\PYG{+w}{ }\PYG{k}{ON}\PYG{+w}{ }\PYG{n}{Ticket}\PYG{p}{.}\PYG{n}{eid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{Reservation}\PYG{p}{.}\PYG{n}{eid}
+\PYG{+w}{    }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{Reservation}\PYG{p}{.}\PYG{n}{rid}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{924}\PYG{p}{;}
+\end{Verbatim}

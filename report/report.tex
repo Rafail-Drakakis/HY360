@@ -1,4 +1,5 @@
 \documentclass[a4paper, 11pt]{article}
+\usepackage[a4paper, left=1in, right=1in, top=1in, bottom=1in]{geometry}
 \usepackage{fontspec}
 \usepackage{minted}
 \usepackage{polyglossia, csquotes}
@@ -44,7 +45,7 @@
 
 \begin{document}
 \title{Project ΗΥ-360}
-\author{Δρακάκης Ραφαήλ csd5310\\Άγγελος-Τίτος Δήμογλης csd5078\\Κωνσταντίνος Κουναλάκης csd5058}
+\author{Άγγελος-Τίτος Δήμογλης csd5078\\Κωνσταντίνος Κουναλάκης csd5058\\Δρακάκης Ραφαήλ csd5310}
 \date{}
 \maketitle
 \section*{1η φάση}
@@ -438,21 +439,31 @@ PROCEDURE ADD_CUSTOMER(email, credit_info, first_name, last_name):
         RETURN "Missing required fields"
 \end{minted}
 \begin{minted}{sql}
-PROCEDURE CREATE_RESERVATION(customer_id, event_id,
- ticket_count, total_price):
+PROCEDURE CREATE_RESERVATION(customer_id, event_id, 
+					ticket_count, total_price):
     IF ticket_count > 0 AND total_price > 0:
-        CHECK IF event_capacity(event_id) >= ticket_count:
-            INSERT INTO Reservation (customer_id, event_id, 
-            		ticket_count, total_price)
-            IF reservation is successful:
-                UPDATE ticket availability for the event
+        SELECT capacity FROM Event
+        WHERE eid = event_id
+        IF capacity >= ticket_count:
+            INSERT INTO Reservation (cid, eid, 
+            		tickets_number, total_price)
+            VALUES (customer_id, event_id, ticket_count, total_price)
+            IF reservation was successfully created:
+                FOR i = 1 TO ticket_count:
+                    SELECT tid FROM Ticket
+                    WHERE eid = event_id AND availability = TRUE
+                    LIMIT 1
+                    UPDATE Ticket
+                    SET availability = FALSE
+                    WHERE tid = selected_ticket_id AND eid = event_id
                 RETURN reservation ID
             ELSE:
-                RETURN "Reservation failed"
+                RETURN "Reservation creation failed"
         ELSE:
-            RETURN "Not enough capacity"
+            RETURN "Not enough available capacity 
+            for the requested tickets"
     ELSE:
-        RETURN "Invalid ticket count or price"
+        RETURN "Invalid ticket count or total price"
 \end{minted}
 \begin{minted}{sql}
 PROCEDURE UPDATE_TICKET_AVAILABILITY(ticket_id, availability):

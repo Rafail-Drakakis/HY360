@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{CANCEL\PYGZus{}RESERVATION}\PYG{p}{(}\PYG{n}{reservation\PYGZus{}id}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{reservation\PYGZus{}id}\PYG{+w}{ }\PYG{k}{exists}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{DELETE}\PYG{+w}{ }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{Reservation}
+\PYG{+w}{        }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{reservation\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{reservation\PYGZus{}id}
+\PYG{+w}{        }\PYG{k}{UPDATE}\PYG{+w}{ }\PYG{n}{ticket}\PYG{+w}{ }\PYG{n}{availability}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{success}
+\PYG{+w}{    }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Reservation not found\PYGZdq{}}
+\end{Verbatim}

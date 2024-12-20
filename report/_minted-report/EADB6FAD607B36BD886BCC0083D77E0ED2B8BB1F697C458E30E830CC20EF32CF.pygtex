@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{CHECK\PYGZus{}EVENT\PYGZus{}CAPACITY}\PYG{p}{(}\PYG{n}{event\PYGZus{}id}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{SELECT}\PYG{+w}{ }\PYG{n}{capacity}
+\PYG{+w}{    }\PYG{k}{FROM}\PYG{+w}{ }\PYG{n}{Event}
+\PYG{+w}{    }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{event\PYGZus{}id}
+\PYG{+w}{    }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{capacity}
+\end{Verbatim}

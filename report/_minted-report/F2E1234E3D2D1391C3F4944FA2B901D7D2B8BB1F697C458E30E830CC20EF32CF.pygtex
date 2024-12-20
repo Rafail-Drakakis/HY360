@@ -1,0 +1,10 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{PROCEDURE}\PYG{+w}{ }\PYG{n}{UPDATE\PYGZus{}TICKET\PYGZus{}AVAILABILITY}\PYG{p}{(}\PYG{n}{ticket\PYGZus{}id}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{availability}\PYG{p}{):}
+\PYG{+w}{    }\PYG{k}{IF}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}id}\PYG{+w}{ }\PYG{k}{exists}\PYG{+w}{ }\PYG{k}{AND}\PYG{+w}{ }\PYG{n}{availability}\PYG{+w}{ }\PYG{k}{is}\PYG{+w}{ }\PYG{k}{valid}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{UPDATE}\PYG{+w}{ }\PYG{n}{Ticket}
+\PYG{+w}{        }\PYG{k}{SET}\PYG{+w}{ }\PYG{n}{availability}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{availability}
+\PYG{+w}{        }\PYG{k}{WHERE}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{ticket\PYGZus{}id}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{success}
+\PYG{+w}{    }\PYG{k}{ELSE}\PYG{p}{:}
+\PYG{+w}{        }\PYG{k}{RETURN}\PYG{+w}{ }\PYG{n}{error}\PYG{+w}{ }\PYG{l+s+ss}{\PYGZdq{}Invalid ticket ID or availability\PYGZdq{}}
+\end{Verbatim}
