@@ -11,6 +11,10 @@ function showMessage(message, type = "info") {
         messageDiv.remove();
     }, 3000);
 }
+update_event_chooser("bookEventIdselect");
+update_event_chooser("searchSeatsIdselect");
+update_event_chooser("cancelEventIdselect");
+update_event_chooser("pes");
 // Helper function to display the tables
 async function table_render(table_name,table_json) {
     try {
@@ -459,17 +463,19 @@ document.getElementById("cancelReservationForm").addEventListener(
     async (e) => {
         console.log("hello from cancel 2")
         e.preventDefault();
-        const reservationId = document.getElementById("reservationId").value;
+        const customerEmail = document.getElementById("customerEmailCancel").value;
         try {
-            const response = await fetch(
-                `${API_URL}/cancel_reservation/${reservationId}`,
-                {
-                    method: "GET",
+            // Make a POST request with the email as the body data
+            const response = await fetch(`${API_URL}/cancel_reservation`, {
+                method: "POST", // POST request
+                headers: {
+                    "Content-Type": "application/json", // Set content type to JSON
                 },
-            );
+                body: JSON.stringify({ email: customerEmail }), // Send the email as JSON
+            });
             const result = await response.json();
             if (response.status === 200) {
-                showMessage(result.message, "reservation cancelled");
+                showMessage(result.message, "success");
                 setTimeout(table_all(), 500);
             } else {
                 showMessage(result.message, "error");
@@ -490,18 +496,22 @@ document.getElementById("cancelEventForm").addEventListener(
     async (e) => {
         e.preventDefault();
         console.log("hello from cancel 1")
-        const reservationId = document.getElementById("cancelEventIdselect").value;
+        const eventid = document.getElementById("cancelEventIdselect").value;
         try {
             const response = await fetch(
-                `${API_URL}/cancel_reservation/${reservationId}`,
+                `${API_URL}/cancel_event/${eventid}`,
                 {
                     method: "GET",
                 },
             );
-            console.log("hello from cancel 12")
             const result = await response.json();
             if (response.status === 200) {
-                showMessage(result.message, "event cancelled");
+                const eventid = document.getElementById("cancelEventIdselect").value;
+                removeEventFromDropdown("cancelEventIdselect", eventid)
+                removeEventFromDropdown("bookEventIdselect", eventid)
+                removeEventFromDropdown("searchSeatsIdselect", eventid)
+                removeEventFromDropdown("pes", eventid)
+                showMessage("Event cancelled", "success");
                 setTimeout(table_all(), 500);
             } else {
                 showMessage(result.message, "error");
@@ -514,6 +524,16 @@ document.getElementById("cancelEventForm").addEventListener(
         }
     },
 );
+//  to remove event from dropdowns
+function removeEventFromDropdown(selectElementId, eventId) {
+    const eventSelect = document.getElementById(selectElementId);
+    const optionToRemove = eventSelect.querySelector(`option[value="${eventId}"]`);
+    if (optionToRemove) {
+        optionToRemove.remove();
+    }
+}
+
+
 
 // Function to view tickets left for all events
 document.getElementById("refresh_render").addEventListener(
