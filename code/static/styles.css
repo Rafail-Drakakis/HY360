@@ -1,175 +1,176 @@
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
 }
 
 header {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 1rem 0;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  padding: 1rem 0;
 }
 
 h1 {
-    margin: 0;
-    font-size: 2rem;
+  margin: 0;
+  font-size: 2rem;
 }
 
-.table{
-    border-spacing: 0;
-    margin: 1rem;
+.table {
+  border-spacing: 0;
+  margin: 1rem;
 }
 
-.table__row:nth-child(even){
-    background-color: #add8e6;
+.table__row:nth-child(even) {
+  background-color: #add8e6;
 }
 
-.table__cell{
-    padding: 15px;
+.table__cell {
+  padding: 15px;
 }
-
 
 /* Main Content Styles */
 main {
-    padding: 2rem;
+  padding: 2rem;
 }
 
 section#operations {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
 .operation {
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    flex: 1 1 calc(33.333% - 2rem);
-    min-width: 300px;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1 1 calc(33.333% - 2rem);
+  min-width: 300px;
 }
 
 .operation h2 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .operation form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .operation form input,
 .operation form button {
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 .operation form input:focus {
-    border-color: #007bff;
-    outline: none;
+  border-color: #007bff;
+  outline: none;
 }
 
 .operation form button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
 }
 
 .operation form button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 #eventStatisticsResult,
 #availableSeatsResult,
 #bookingResult,
 #cancelResult {
-    margin-top: 1rem;
-    padding: 0.5rem;
-    background-color: #f9f9f9;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: #333;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #333;
 }
 
 /* Button Styles */
 button {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    margin: 0.5rem 0;
-    font-size: 1rem;
-    color: white;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
 /* Notification Styles */
 .notification {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 1rem;
-    color: white;
-    z-index: 1000;
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  color: white;
+  z-index: 1000;
+  animation:
+    fadein 0.5s,
+    fadeout 0.5s 2.5s;
 }
 
 .notification.info {
-    background-color: #007bff;
+  background-color: #007bff;
 }
 
 .notification.success {
-    background-color: #28a745;
+  background-color: #28a745;
 }
 
 .notification.error {
-    background-color: #dc3545;
+  background-color: #dc3545;
 }
 
 @keyframes fadein {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeout {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
-    section#operations {
-        flex-direction: column;
-    }
+  section#operations {
+    flex-direction: column;
+  }
 
-    .operation {
-        flex: 1 1 100%;
-    }
+  .operation {
+    flex: 1 1 100%;
+  }
 }
