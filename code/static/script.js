@@ -247,18 +247,22 @@ async function update_tickets_chooser() {
         var label2 = document.createElement("label");
         label2.innerText = "\n";
         var t_type = document.createElement("select");
+
         var type1 = document.createElement("option");
         type1.value = "VIP";
         type1.innerHTML = "VIP" + "(" + vip_price + ")";
         t_type.appendChild(type1);
+
         var type2 = document.createElement("option");
         type2.value = "FrontRow";
         type2.innerHTML = "Front Row" + "(" + front_price + ")";
         t_type.appendChild(type2);
+
         var type3 = document.createElement("option");
         type3.value = "Normal";
         type3.innerHTML = "Normal" + "(" + normal_price + ")";
         t_type.appendChild(type3);
+
         t_type.id = "ticket" + i;
         container.appendChild(label);
         container.appendChild(t_type);
