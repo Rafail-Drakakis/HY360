@@ -766,12 +766,42 @@ def cancel_event(eid):
 def event_revenue():
     data = request.json
     print(data)  # Log data for debugging
-    if(data['type'] == "VIP"):
-        return jsonify({'message': 'Not implemented yet'}), 500  # VIP revenue not implemented
+    conn = db_connection()
+    cursor = conn.cursor()
+
+    if data['type'] == "VIP":
+        if data['eid'] != "All":
+            try:
+                # Calculate VIP revenue for a specific event
+                cursor.execute("""
+                SELECT SUM(Ticket.price)
+                FROM Ticket
+                JOIN Contains ON Ticket.tid = Contains.tid
+                WHERE Contains.eid = ? AND Ticket.type = 'VIP'
+                """, (int(data['eid']),))
+                revenue = cursor.fetchone()[0]
+                conn.close()
+                return jsonify({'total_revenue': revenue if revenue else 0})
+            except:
+                conn.close()
+                return jsonify({'message': 'Error'}), 500
+        else:
+            try:
+                # Calculate total VIP revenue across all events
+                cursor.execute("""
+                SELECT SUM(Ticket.price)
+                FROM Ticket
+                JOIN Contains ON Ticket.tid = Contains.tid
+                WHERE Ticket.type = 'VIP'
+                """)
+                revenue = cursor.fetchone()[0]
+                conn.close()
+                return jsonify({'total_revenue': revenue if revenue else 0})
+            except:
+                conn.close()
+                return jsonify({'message': 'Error'}), 500
     else:
-        conn = db_connection()
-        cursor = conn.cursor()
-        if(data['eid'] != "All"):
+        if data['eid'] != "All":
             try:
                 # Calculate revenue for a specific event
                 cursor.execute("""
@@ -783,7 +813,7 @@ def event_revenue():
             except:
                 conn.close()
                 return jsonify({'message': 'Error'}), 500  # Error fetching revenue for specific event
-        else: 
+        else:
             try:
                 # Calculate total revenue for all events
                 cursor.execute("""
@@ -794,8 +824,8 @@ def event_revenue():
                 return jsonify({'total_revenue': revenue if revenue else 0})
             except:
                 conn.close()
-                return jsonify({'message': 'Error2'}), 500  # Error fetching total revenue
-    return jsonify({'message': 'Error3'}), 500  # Generic error response
+                return jsonify({'message': 'Error2'}), 500
+    return jsonify({'message': 'Error3'}), 500
 
 # Route to get the most popular event based on the number of reservations
 @app.route('/most_popular_event', methods=['GET'])
