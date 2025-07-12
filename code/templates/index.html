@@ -1,155 +1,239 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Event Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script type="text/javascript" src="{{ url_for('static', filename='script.js') }}" defer></script>
-</head>    
-<body>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='script.js') }}"
+      defer
+    ></script>
+  </head>
+  <body>
     <header>
-        <h1>Event Management System</h1>
+      <h1>Event Management System</h1>
     </header>
     <main>
-        <section id="operations">
+      <section id="operations">
+        <div class="operation">
+          <h2>Add New Customer</h2>
+          <!-- html form gets consumed by js that in turn calls python -->
+          <form id="addCustomerForm">
+            <input
+              type="text"
+              id="customerFirstName"
+              placeholder="First Name"
+              required
+            />
+            <input
+              type="text"
+              id="customerLastName"
+              placeholder="Last Name"
+              required
+            />
+            <input
+              type="text"
+              id="customerEmail"
+              placeholder="Email"
+              required
+            />
+            <input
+              type="text"
+              id="customerCredit"
+              placeholder="Credit Info"
+              required
+            />
+            <button type="submit">Add Customer</button>
+          </form>
+        </div>
 
-            <div class="operation">
-                <h2>Add New Customer</h2>
-                <!-- html form gets consumed by js that in turn calls python -->
-                <form id="addCustomerForm">
-                    <input type="text" id="customerFirstName" placeholder="First Name" required>
-                    <input type="text" id="customerLastName" placeholder="Last Name" required>
-                    <input type="text" id="customerEmail" placeholder="Email" required>
-                    <input type="text" id="customerCredit" placeholder="Credit Info" required>
-                    <button type="submit">Add Customer</button>
-                </form>
-            </div>
-            
-            
-            <div class="operation">
-                <h2>Add New Event</h2>
-                <form id="addEventForm">
-                    <input type="text" id="eventName" placeholder="Event Name" required>
-                    <input type="text" id="eventType" placeholder="Type" required>
-                    <input type="time" id="eventTime" required>
-                    <input type="date" id="eventDate" required>
-                    <input type="number" id="eventCapacity" placeholder="Capacity" required>
-                    
-                    <input type="number" id="VIP_Capacity" placeholder="Number of VIP seats" required>
-                    <input type="number" id="FrontRow_Capacity" placeholder="Number of front row seats" required>
-                    <input type="number" id="Normal_Capacity" placeholder="Number of back row or side row seats" required>
-                    
-                    <input type="number" step="0.01" id="VIP_Price" placeholder="Price (in euro) of VIP seats" required>
-                    <input type="number" step="0.01" id="FrontRow_Price" placeholder="Price (in euro) of front row seats" required>
-                    <input type="number" step="0.01" id="Normal_Price" placeholder="Price (in euro) of back row or side row seats" required>
-                    <button type="submit">Add Event</button>
-                </form>
-            </div>
-            
-           
-            <div class="operation">
-                <h2>Book Tickets</h2>
-                <form id="bookTicketsForm">
-                    <select id="bookEventIdselect" name="event_select" required>
-                        <option value="noEvent">No event</option>
-                    </select>
-                    <input type="text" id="customerIdmail" placeholder="Customer email" required>
-                    <input type="number" step="1" id="numOfTickets" placeholder="Number of tickets" oninput="update_tickets_chooser()" required>
-                    <div id=bookTicketsFormdiv></div>
-                    <button type="submit">Book Tickets</button>
-                </form>
-            </div>
+        <div class="operation">
+          <h2>Add New Event</h2>
+          <form id="addEventForm">
+            <input
+              type="text"
+              id="eventName"
+              placeholder="Event Name"
+              required
+            />
+            <input type="text" id="eventType" placeholder="Type" required />
+            <input type="time" id="eventTime" required />
+            <input type="date" id="eventDate" required />
+            <input
+              type="number"
+              id="eventCapacity"
+              placeholder="Capacity"
+              required
+            />
 
-               
-            <div class="operation">
-                <h2>Search Available Seats</h2>
-                <form id="searchSeatsForm">
-                    <select id="searchSeatsIdselect" name="seats_select" required>
-                        <option value="noEvent">No event</option>
-                    </select>
-                    <button type="submit">Search</button>
-                </form>
-                <div id="availableSeatsResult_container"></div>
-            </div>
-            
-            <div class="operation">
-                <h2>Cancel Event</h2>
-                <form id="cancelEventForm">
-                    <select id="cancelEventIdselect" name="cancel_select" required>
-                        <option value="noEvent">No event</option>
-                    </select>
-                    <button type="submit">Cancel Event</button>
-                </form>
-            </div>
+            <input
+              type="number"
+              id="VIP_Capacity"
+              placeholder="Number of VIP seats"
+              required
+            />
+            <input
+              type="number"
+              id="FrontRow_Capacity"
+              placeholder="Number of front row seats"
+              required
+            />
+            <input
+              type="number"
+              id="Normal_Capacity"
+              placeholder="Number of back row or side row seats"
+              required
+            />
 
-            <div class="operation">
-                <h2>Cancel Reservation(s)</h2>
-                <form id="cancelReservationForm">
-                    <input type="text" id="customerEmailCancel" placeholder=" Customer Email" required>
-                    <button type="submit">Cancel Reservation</button>
-                </form>
-            </div>
+            <input
+              type="number"
+              step="0.01"
+              id="VIP_Price"
+              placeholder="Price (in euro) of VIP seats"
+              required
+            />
+            <input
+              type="number"
+              step="0.01"
+              id="FrontRow_Price"
+              placeholder="Price (in euro) of front row seats"
+              required
+            />
+            <input
+              type="number"
+              step="0.01"
+              id="Normal_Price"
+              placeholder="Price (in euro) of back row or side row seats"
+              required
+            />
+            <button type="submit">Add Event</button>
+          </form>
+        </div>
 
+        <div class="operation">
+          <h2>Book Tickets</h2>
+          <form id="bookTicketsForm">
+            <select id="bookEventIdselect" name="event_select" required>
+              <option value="noEvent">No event</option>
+            </select>
+            <input
+              type="text"
+              id="customerIdmail"
+              placeholder="Customer email"
+              required
+            />
+            <input
+              type="number"
+              step="1"
+              id="numOfTickets"
+              placeholder="Number of tickets"
+              oninput="update_tickets_chooser()"
+              required
+            />
+            <div id="bookTicketsFormdiv"></div>
+            <button type="submit">Book Tickets</button>
+          </form>
+        </div>
 
-            <div class="operation">
-                <h2>View profits</h2>
-                <form id="profitsForm">
-                    <select id="pes" name="profit_select" required>
-                        <option value="All">All events</option>
-                    </select>
-                    <select id="pts" name="profit_type_select" required>
-                        <option value="All">All types</option>
-                        <option value="VIP">VIP only</option>
-                    </select>
+        <div class="operation">
+          <h2>Search Available Seats</h2>
+          <form id="searchSeatsForm">
+            <select id="searchSeatsIdselect" name="seats_select" required>
+              <option value="noEvent">No event</option>
+            </select>
+            <button type="submit">Search</button>
+          </form>
+          <div id="availableSeatsResult_container"></div>
+        </div>
 
-                    <button type="submit">View</button>
-                </form>
-                <div id="eventSProfits_container"></div>
-            </div>
+        <div class="operation">
+          <h2>Cancel Event</h2>
+          <form id="cancelEventForm">
+            <select id="cancelEventIdselect" name="cancel_select" required>
+              <option value="noEvent">No event</option>
+            </select>
+            <button type="submit">Cancel Event</button>
+          </form>
+        </div>
 
-            <div class="operation">
-                <h2>View Active Reservations</h2>
-                <form id="viewReservationsForm">
-                    <label>Starting date</label><input type="date" id="eventDateS"  required>
-                    <label>Final date</label><input type="date" id="eventDateF" required>
-                    <button type="submit">View</button>
-                </form>
-                <div id="ActiveReservationsResult_container"></div>
-            </div>
+        <div class="operation">
+          <h2>Cancel Reservation(s)</h2>
+          <form id="cancelReservationForm">
+            <input
+              type="text"
+              id="customerEmailCancel"
+              placeholder=" Customer Email"
+              required
+            />
+            <button type="submit">Cancel Reservation</button>
+          </form>
+        </div>
 
+        <div class="operation">
+          <h2>View profits</h2>
+          <form id="profitsForm">
+            <select id="pes" name="profit_select" required>
+              <option value="All">All events</option>
+            </select>
+            <select id="pts" name="profit_type_select" required>
+              <option value="All">All types</option>
+              <option value="VIP">VIP only</option>
+            </select>
 
-    
-            <div class="operation">
-                <h2>View Event Statistics</h2>
-                <button id="mostPopularEvent">Most Popular Event (most reservations)</button>
-                <button id="highestProfitEvent">Event with Highest Profit</button>
-                <button id="refresh_render">Refresh Database</button>
-            </div>
+            <button type="submit">View</button>
+          </form>
+          <div id="eventSProfits_container"></div>
+        </div>
 
-            <div id="customers_container" class="operation">
-                <h2>Customers Table</h2>
-            </div>
-            <div id="events_container" class="operation">
-                <h2>Events Table</h2>
-            </div>
-            <div id="tickets_container" class="operation">
-                <h2>Tickets Table</h2>
-            </div>
-            <div id="reservations_container" class="operation">
-                <h2>Reservations Table</h2>
-            </div>
-            <div id="contains_container" class="operation">
-                <h2>Contains Table</h2>
-            </div>
-            <div id="has_container" class="operation">
-                <h2>Has Table</h2>
-            </div>
-            <div id="makes_container" class="operation">
-                <h2>Makes Table</h2>
-            </div>
-        </section>
+        <div class="operation">
+          <h2>View Active Reservations</h2>
+          <form id="viewReservationsForm">
+            <label>Starting date</label
+            ><input type="date" id="eventDateS" required />
+            <label>Final date</label
+            ><input type="date" id="eventDateF" required />
+            <button type="submit">View</button>
+          </form>
+          <div id="ActiveReservationsResult_container"></div>
+        </div>
+
+        <div class="operation">
+          <h2>View Event Statistics</h2>
+          <button id="mostPopularEvent">
+            Most Popular Event (most reservations)
+          </button>
+          <button id="highestProfitEvent">Event with Highest Profit</button>
+          <button id="refresh_render">Refresh Database</button>
+        </div>
+
+        <div id="customers_container" class="operation">
+          <h2>Customers Table</h2>
+        </div>
+        <div id="events_container" class="operation">
+          <h2>Events Table</h2>
+        </div>
+        <div id="tickets_container" class="operation">
+          <h2>Tickets Table</h2>
+        </div>
+        <div id="reservations_container" class="operation">
+          <h2>Reservations Table</h2>
+        </div>
+        <div id="contains_container" class="operation">
+          <h2>Contains Table</h2>
+        </div>
+        <div id="has_container" class="operation">
+          <h2>Has Table</h2>
+        </div>
+        <div id="makes_container" class="operation">
+          <h2>Makes Table</h2>
+        </div>
+      </section>
     </main>
-</body>
+  </body>
 </html>
-
